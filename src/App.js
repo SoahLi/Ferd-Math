@@ -1,23 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
+import { evaluate } from 'mathjs';
+import { createCanvas, clear, background, rectMode, textAlign, CENTER, strokeWeight, textSize, line, noStroke, text, stroke, rect} from 'p5';
+import Sketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <p>hello</p>
+      <Sketch></Sketch> 
     </div>
   );
 }
