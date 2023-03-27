@@ -1,14 +1,18 @@
-import logo from './logo.svg';
 import './App.css';
-import { evaluate } from 'mathjs';
-import { createCanvas, clear, background, rectMode, textAlign, CENTER, strokeWeight, textSize, line, noStroke, text, stroke, rect} from 'p5';
-import Sketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
+import MySketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
+import Input from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Input.js';
+import Buttons from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Buttons.js';
 
 function App() {
   return (
     <div>
-      <p>hello</p>
-      <Sketch></Sketch> 
+      <div className="inputs">
+        <Input></Input>
+        <Buttons></Buttons>
+      </div>
+      <div className="p5">
+        <MySketch></MySketch>
+      </div>
     </div>
   );
 }
