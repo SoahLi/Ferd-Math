@@ -1,8 +1,6 @@
 import React from "react";
-import { evaluate } from "mathjs";
 import Sketch from 'react-p5';
-import { EditableMathField } from "react-mathquill";
-import { parseTex, evaluateTex } from 'tex-math-parser';
+import { evaluateTex } from 'tex-math-parser';
 
 let functionInput = "";
 
@@ -16,6 +14,8 @@ const h = 1000;
 const w = 1000;
 let xSet = [-5,-4,-3,-2,-1,0,1,2,3,4,5];
 let ySet = [-5,-4,-3,-2,-1,0,1,2,3,4,5];
+let xSetFactorCount = 1;
+let ySetFactorCount = 1;
 let intervals = 11;
 const origin = (w+excess)/2;
 const graphLength = ((origin*2)-(excess*2));
@@ -28,49 +28,48 @@ let xPoints = []
 let yPoints = [];
 var plotPoints = [];
 
-function increaseySet() {
-  for(let i=6; i<ySet.length; i++) {
-    ySet[i] *= 2;
+function increaseSet(set, factorCount) {
+  let factor;
+  if(factorCount < 2) {
+    factor = 2;
+    factorCount++;
+  } else {
+    factor = 2.5;
+    factorCount = 0;
+  }
+  for(let i=6; i<set.length; i++) {
+    set[i] *= factor;
   }
   for(let i=0; i<5; i++) {
-    ySet[i] *=2;
+    set[i] *= factor;
   }
   setSingleSizes();
   handleInput();
+  console.log(factorCount);
+  return factorCount;
 }
 
-function decreaseySet() {
-  for(let i=6; i<ySet.length; i++) {
-    ySet[i] /= 2;
+function decreaseSet(set, factorCount) {
+  let factor;
+  if(factorCount > 0) {
+    factor = 2;
+    factorCount--;
+  } else {
+    factor = 2.5;
+    factorCount = 2;
+  }
+  for(let i=6; i<set.length; i++) {
+    set[i] /= factor;
   }
   for(let i=0; i<5; i++) {
-    ySet[i] /= 2;
+    set[i] /= factor;
   }
   setSingleSizes();
   handleInput();
+  console.log(factorCount);
+  return factorCount;
 }
 
-function increaseXSet() {
-  for(let i=6; i<xSet.length; i++) {
-    xSet[i] *= 2;
-  }
-  for(let i=0; i<5; i++) {
-    xSet[i] *= 2;
-  }
-  setSingleSizes();
-  handleInput();
-}
-
-function decreaseXSet() {
-  for(let i=6; i<xSet.length; i++) {
-    xSet[i] /= 2;
-  }
-  for(let i=0; i<5; i++) {
-    xSet[i] /= 2;
-  }
-  setSingleSizes();
-  handleInput();
-}
 
 function setSingleSizes() {
   singleYSize = graphLength/Math.abs((ySet[0]-ySet[ySet.length-1]));
@@ -89,11 +88,10 @@ function calculate(input, v = 0) {
   const scope = {x: v};
   try {
     const result = evaluateTex(input, scope).evaluated;
-    console.log(result);
     return result;
   }
   catch {
-    console.log("this ain't a function yo");
+    //console.log("this ain't a function yo");
     return undefined;
   }
 }
@@ -105,22 +103,16 @@ const plot = (dataSet) => {
     yPoints.push(dataSet[i] * singleYSize);
     plotPoints.push([xPoints[i], yPoints[i]]);
   }
-  console.log(plotPoints);
 }
 
 
 function handleInput() {
-  //let userInput = document.getElementById("math-field").getAttribute("latex");
-  if(calculate(functionInput) == undefined) {
-    console.log(calculate(functionInput));
-    return;
+  if(calculate(functionInput) != undefined) {
+    plotPoints = [];
+    xPoints = [];
+    yPoints = [];
+    plot(iterate(functionInput));
   }
-  //let userInput = document.getElementById("input-button").value;
-  console.log("we made it");
-  plotPoints = [];
-  xPoints = [];
-  yPoints = [];
-  plot(iterate(functionInput));
   isGraph = true;
 }
 
@@ -133,13 +125,13 @@ const Canv = (props) => {
     //functionInput.addEventListener("input", () => handleInput());  
     //functionInput.addEventListener("keydown", () => handleInput());
     let plusYButton = document.getElementById("plus-y-button");
-    plusYButton.addEventListener("click", () => increaseySet());
+    plusYButton.addEventListener("click", () => ySetFactorCount = increaseSet(ySet, ySetFactorCount));
     let minusYButton = document.getElementById("minus-y-button");
-    minusYButton.addEventListener("click", () => decreaseySet());
+    minusYButton.addEventListener("click", () => ySetFactorCount = decreaseSet(ySet, ySetFactorCount));
     let plusXButton = document.getElementById("plus-x-button");
-    plusXButton.addEventListener("click", () => increaseXSet());
+    plusXButton.addEventListener("click", () => xSetFactorCount = increaseSet(xSet, xSetFactorCount));
     let minusXButton = document.getElementById("minus-x-button");
-    minusXButton.addEventListener("click", () => decreaseXSet());
+    minusXButton.addEventListener("click", () => xSetFactorCount = decreaseSet(xSet, xSetFactorCount));
   };
 
 
