@@ -1,110 +1,137 @@
 import React from "react";
 import { evaluate } from "mathjs";
 import Sketch from 'react-p5';
+import { EditableMathField } from "react-mathquill";
+import { parseTex, evaluateTex } from 'tex-math-parser';
+
+let functionInput = "";
+
+export function setFunctionInput(input) {
+  functionInput = String.raw`${input}`;
+  handleInput();
+}
+
+const excess = 100;
+const h = 1000;
+const w = 1000;
+let xSet = [-5,-4,-3,-2,-1,0,1,2,3,4,5];
+let ySet = [-5,-4,-3,-2,-1,0,1,2,3,4,5];
+let intervals = 11;
+const origin = (w+excess)/2;
+const graphLength = ((origin*2)-(excess*2));
+let singleYSize = graphLength/Math.abs((ySet[0]-ySet[ySet.length-1]));
+let singleXSize = graphLength/Math.abs((xSet[0]-xSet[xSet.length-1]));
+let intervalDistance = graphLength/(intervals-1);
+let isGraph = true;
+let texts = [];
+let xPoints = []
+let yPoints = [];
+var plotPoints = [];
+
+function increaseySet() {
+  for(let i=6; i<ySet.length; i++) {
+    ySet[i] *= 2;
+  }
+  for(let i=0; i<5; i++) {
+    ySet[i] *=2;
+  }
+  setSingleSizes();
+  handleInput();
+}
+
+function decreaseySet() {
+  for(let i=6; i<ySet.length; i++) {
+    ySet[i] /= 2;
+  }
+  for(let i=0; i<5; i++) {
+    ySet[i] /= 2;
+  }
+  setSingleSizes();
+  handleInput();
+}
+
+function increaseXSet() {
+  for(let i=6; i<xSet.length; i++) {
+    xSet[i] *= 2;
+  }
+  for(let i=0; i<5; i++) {
+    xSet[i] *= 2;
+  }
+  setSingleSizes();
+  handleInput();
+}
+
+function decreaseXSet() {
+  for(let i=6; i<xSet.length; i++) {
+    xSet[i] /= 2;
+  }
+  for(let i=0; i<5; i++) {
+    xSet[i] /= 2;
+  }
+  setSingleSizes();
+  handleInput();
+}
+
+function setSingleSizes() {
+  singleYSize = graphLength/Math.abs((ySet[0]-ySet[ySet.length-1]));
+  singleXSize = graphLength/Math.abs((xSet[0]-xSet[xSet.length-1]));
+}
+
+function iterate(equation) {
+  let dataSet = [];
+  for(let i=0; i<xSet.length; i++) {
+    dataSet.push(calculate(equation, xSet[i]));
+  }
+  return dataSet;
+}
+
+function calculate(input, v = 0) {
+  const scope = {x: v};
+  try {
+    const result = evaluateTex(input, scope).evaluated;
+    console.log(result);
+    return result;
+  }
+  catch {
+    console.log("this ain't a function yo");
+    return undefined;
+  }
+}
 
 
+const plot = (dataSet) => {
+  for(let i=0; i<dataSet.length; i++) {
+    xPoints.push(xSet[i] * singleXSize);
+    yPoints.push(dataSet[i] * singleYSize);
+    plotPoints.push([xPoints[i], yPoints[i]]);
+  }
+  console.log(plotPoints);
+}
 
 
-export default (props) => {
-  const excess = 100;
-  const h = 1000;
-  const w = 1000;
-  let xSet = [-5,-4,-3,-2,-1,0,1,2,3,4,5];
-  let ySet = [-5,-4,-3,-2,-1,0,1,2,3,4,5];
-  let intervals = 11;
-  const origin = (w+excess)/2;
-  const graphLength = ((origin*2)-(excess*2));
-  let singleYSize = graphLength/Math.abs((ySet[0]-ySet[ySet.length-1]));
-  let singleXSize = graphLength/Math.abs((xSet[0]-xSet[xSet.length-1]));
-  let intervalDistance = graphLength/(intervals-1);
-  let isGraph = true;
-  let texts = []
-  let xPoints = []
-  let yPoints = [];
-  var plotPoints = []
-  let functionInput = "";
+function handleInput() {
+  //let userInput = document.getElementById("math-field").getAttribute("latex");
+  if(calculate(functionInput) == undefined) {
+    console.log(calculate(functionInput));
+    return;
+  }
+  //let userInput = document.getElementById("input-button").value;
+  console.log("we made it");
+  plotPoints = [];
+  xPoints = [];
+  yPoints = [];
+  plot(iterate(functionInput));
+  isGraph = true;
+}
 
-  function increaseySet() {
-    for(let i=6; i<ySet.length; i++) {
-      ySet[i] *= 2;
-    }
-    for(let i=0; i<5; i++) {
-      ySet[i] *=2;
-    }
-    setSingleSizes();
-    handleInput();
-  }
-  
-  function decreaseySet() {
-    for(let i=6; i<ySet.length; i++) {
-      ySet[i] /= 2;
-    }
-    for(let i=0; i<5; i++) {
-      ySet[i] /= 2;
-    }
-    setSingleSizes();
-    handleInput();
-  }
-  
-  function increaseXSet() {
-    for(let i=6; i<xSet.length; i++) {
-      xSet[i] *= 2;
-    }
-    for(let i=0; i<5; i++) {
-      xSet[i] *= 2;
-    }
-    setSingleSizes();
-    handleInput();
-  }
-  
-  function decreaseXSet() {
-    for(let i=6; i<xSet.length; i++) {
-      xSet[i] /= 2;
-    }
-    for(let i=0; i<5; i++) {
-      xSet[i] /= 2;
-    }
-    setSingleSizes();
-    handleInput();
-  }
-  
-  function setSingleSizes() {
-    singleYSize = graphLength/Math.abs((ySet[0]-ySet[ySet.length-1]));
-    singleXSize = graphLength/Math.abs((xSet[0]-xSet[xSet.length-1]));
-  }
-  
-  function iterate(equation) {
-    let dataSet = [];
-    for(let i=0; i<xSet.length; i++) {
-      dataSet.push(calculate(equation, xSet[i]));
-    }
-    return dataSet;
-  }
-  
-  function calculate(input, v = 0) {
-    const scope = { x: v};
-    return evaluate(input, scope);
-  }
-  
-  const plot = (dataSet) => {
-    for(let i=0; i<dataSet.length; i++) {
-      xPoints.push(xSet[i] * singleXSize);
-      yPoints.push(dataSet[i] * singleYSize);
-      plotPoints.push([xPoints[i], yPoints[i]]);
-    }
-  }
-
-  function setFunctionInput(input) {
-    functionInput = input;
-    console.log(functionInput);
-  }
+const Canv = (props) => {
   const setup = (p5, canvasParentRef) => {
     // use parent to render the canvas in this ref
     // (without that p5 will render the canvas outside of your component)
-    //p5.createCanvas(w+excess, h+excess).parent(canvasParentRef);
     p5.createCanvas(w+excess, h+excess).parent(canvasParentRef);
-    // functionInput.addEventListener("input", () => handleInput());  
-    // functionInput.addEventListener("keydown", () => handleInput());
+    
+    //functionInput.addEventListener("input", () => handleInput());  
+    //functionInput.addEventListener("keydown", () => handleInput());
     let plusYButton = document.getElementById("plus-y-button");
     plusYButton.addEventListener("click", () => increaseySet());
     let minusYButton = document.getElementById("minus-y-button");
@@ -115,20 +142,8 @@ export default (props) => {
     minusXButton.addEventListener("click", () => decreaseXSet());
   };
 
-  function handleInput() {
-    //let userInput = document.getElementById("math-field").getAttribute("latex");
-    let userInput = "1/2";
-    //let userInput = document.getElementById("input-button").value;
-    plotPoints = [];
-    xPoints = [];
-    yPoints = [];
-    plot(iterate(userInput));
-    // console.log(plotPoints);
-    isGraph = true;
-  }
 
-  function drawGraph(p5) {
-  }
+
 
   const draw = (p5) => {
     if(isGraph == true) {
@@ -185,43 +200,4 @@ export default (props) => {
   )
 };
 
-// // // to be added after switching all button inputs to html
-// // // //-------------------------------------------------------------
-// // // let scalar = 1;
-
-// // // function increaseySet() {
-// // //   for(let i=0; i<intervals; i++) {
-// // //     ySet[i] += 5;
-// // //   }
-// // //   console.log(ySet);
-// // // }
-
-// // // //---------------------------------------------------------------
-
-// // function setup() {
-// //   createCanvas(w+excess, h+excess);
-// //   let functionInput = document.getElementById("math-field");
-// //   functionInput.addEventListener("input", () => handleInput());  
-// //   functionInput.addEventListener("keydown", () => handleInput());
-// //   // let functionInput = document.getElementById("input-button");
-// //   // functionInput.addEventListener("input", () => handleInput());  
-// //   // functionInput.addEventListener("keydown", () => handleInput());
-// //   let plusYButton = document.getElementById("plus-y-button");
-// //   plusYButton.addEventListener("click", () => increaseySet());
-// //   let minusYButton = document.getElementById("minus-y-button");
-// //   minusYButton.addEventListener("click", () => decreaseySet());
-// //   let plusXButton = document.getElementById("plus-x-button");
-// //   plusXButton.addEventListener("click", () => increaseXSet());
-// //   let minusXButton = document.getElementById("minus-x-button");
-// //   minusXButton.addEventListener("click", () => decreaseXSet());
-// // }
-
-
-
-
-// // function draw() {
-// //   if(isGraph == true) {
-// //     drawGraph();
-// //     isGraph = false;
-// //   }
-// // }
+export default Canv;

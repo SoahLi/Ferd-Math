@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-import { addStyles, EditableMathField } from 'react-mathquill'
+import React, { useState } from 'react';
+import { addStyles, EditableMathField } from 'react-mathquill';
+import {setFunctionInput} from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
 import mySketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
 
 // inserts the required css to the <head> block.
@@ -16,9 +17,9 @@ function Input () {
         latex={latex}
         onChange={(mathField) => {
           setLatex(mathField.latex());
-          
         }}
       />
+      <span>{setFunctionInput(latex)}</span>
     </div>
   )
 }
