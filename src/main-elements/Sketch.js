@@ -9,18 +9,20 @@ export function setFunctionInput(input) {
   handleInput();
 }
 
-const excess = 100;
-const h = 1000;
-const w = 1000;
-let xSet = [-5,-4,-3,-2,-1,0,1,2,3,4,5];
-let ySet = [-5,-4,-3,-2,-1,0,1,2,3,4,5];
+const excess = 10;
+const h = 550;
+const w = 550;
+let xSet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], factorCount: 1};
+let subXSet = []
+let ySet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], factorCount: 1};
+let subYSet = []
 let xSetFactorCount = 1;
 let ySetFactorCount = 1;
 let intervals = 11;
 const origin = (w+excess)/2;
 const graphLength = ((origin*2)-(excess*2));
-let singleYSize = graphLength/Math.abs((ySet[0]-ySet[ySet.length-1]));
-let singleXSize = graphLength/Math.abs((xSet[0]-xSet[xSet.length-1]));
+let singleYSize = graphLength/Math.abs((ySet.mainSet[0]-ySet.mainSet[ySet.mainSet.length-1]));
+let singleXSize = graphLength/Math.abs((xSet.mainSet[0]-xSet.mainSet[xSet.mainSet.length-1]));
 let intervalDistance = graphLength/(intervals-1);
 let isGraph = true;
 let texts = [];
@@ -28,58 +30,66 @@ let xPoints = []
 let yPoints = [];
 var plotPoints = [];
 
-function increaseSet(set, factorCount) {
+function increaseSet(set) {
   let factor;
-  if(factorCount < 2) {
+  if(set.factorCount < 2) {
     factor = 2;
-    factorCount++;
+    set.factorCount++;
   } else {
     factor = 2.5;
-    factorCount = 0;
+    set.factorCount = 0;
   }
-  for(let i=6; i<set.length; i++) {
-    set[i] *= factor;
-  }
-  for(let i=0; i<5; i++) {
-    set[i] *= factor;
+  for(let i=0; i<set.mainSet.length; i++) {
+    set.mainSet[i] *= factor;
+    if(i != 0) {
+    }
   }
   setSingleSizes();
   handleInput();
-  console.log(factorCount);
-  return factorCount;
 }
 
-function decreaseSet(set, factorCount) {
+function decreaseSet(set) {
   let factor;
-  if(factorCount > 0) {
+  if(set.factorCount > 0) {
     factor = 2;
-    factorCount--;
+    set.factorCount--;
   } else {
     factor = 2.5;
-    factorCount = 2;
+    set.factorCount = 2;
   }
-  for(let i=6; i<set.length; i++) {
-    set[i] /= factor;
-  }
-  for(let i=0; i<5; i++) {
-    set[i] /= factor;
+  for(let i=0; i<set.mainSet.length; i++) {
+    set.mainSet[i] /= factor;
   }
   setSingleSizes();
   handleInput();
-  console.log(factorCount);
-  return factorCount;
+}
+
+function createsubSet(set) {
+  set.subSet = [];
+  let subCount;
+  if (set.mainSet[0]%2 == 0) {
+    subCount = 4;
+  } else {
+    subCount = 5;
+  }
+  let scalar = Math.abs((set.mainSet[0] - set.mainSet[1])/subCount);
+  for(var i=0; i<set.mainSet.length-1; i++) {
+    for(var j=1; j<subCount; j++) {
+      set.subSet.push(Math.round((100*(set.mainSet[i]+(scalar*j))))/100);
+    }
+  }
 }
 
 
 function setSingleSizes() {
-  singleYSize = graphLength/Math.abs((ySet[0]-ySet[ySet.length-1]));
-  singleXSize = graphLength/Math.abs((xSet[0]-xSet[xSet.length-1]));
+  singleYSize = graphLength/Math.abs((ySet.mainSet[0]-ySet.mainSet[ySet.mainSet.length-1]));
+  singleXSize = graphLength/Math.abs((xSet.mainSet[0]-xSet.mainSet[xSet.mainSet.length-1]));
 }
 
 function iterate(equation) {
   let dataSet = [];
-  for(let i=0; i<xSet.length; i++) {
-    dataSet.push(calculate(equation, xSet[i]));
+  for(let i=0; i<xSet.mainSet.length; i++) {
+    dataSet.push(calculate(equation, xSet.mainSet[i]));
   }
   return dataSet;
 }
@@ -99,7 +109,7 @@ function calculate(input, v = 0) {
 
 const plot = (dataSet) => {
   for(let i=0; i<dataSet.length; i++) {
-    xPoints.push(xSet[i] * singleXSize);
+    xPoints.push(xSet.mainSet[i] * singleXSize);
     yPoints.push(dataSet[i] * singleYSize);
     plotPoints.push([xPoints[i], yPoints[i]]);
   }
@@ -113,6 +123,8 @@ function handleInput() {
     yPoints = [];
     plot(iterate(functionInput));
   }
+  createsubSet(xSet);
+  createsubSet(ySet);
   isGraph = true;
 }
 
@@ -125,13 +137,15 @@ const Canv = (props) => {
     //functionInput.addEventListener("input", () => handleInput());  
     //functionInput.addEventListener("keydown", () => handleInput());
     let plusYButton = document.getElementById("plus-y-button");
-    plusYButton.addEventListener("click", () => ySetFactorCount = increaseSet(ySet, ySetFactorCount));
+    plusYButton.addEventListener("click", () => increaseSet(ySet));
     let minusYButton = document.getElementById("minus-y-button");
-    minusYButton.addEventListener("click", () => ySetFactorCount = decreaseSet(ySet, ySetFactorCount));
+    minusYButton.addEventListener("click", () => decreaseSet(ySet));
     let plusXButton = document.getElementById("plus-x-button");
-    plusXButton.addEventListener("click", () => xSetFactorCount = increaseSet(xSet, xSetFactorCount));
+    plusXButton.addEventListener("click", () => increaseSet(xSet));
     let minusXButton = document.getElementById("minus-x-button");
-    minusXButton.addEventListener("click", () => xSetFactorCount = decreaseSet(xSet, xSetFactorCount));
+    minusXButton.addEventListener("click", () => decreaseSet(xSet));
+          createsubSet(xSet);
+      createsubSet(ySet);
   };
 
 
@@ -140,7 +154,6 @@ const Canv = (props) => {
   const draw = (p5) => {
     if(isGraph == true) {
       p5.clear();
-      p5.background(255,0,0);
       p5.rectMode(p5.CENTER);
       p5.textAlign(p5.CENTER);
       p5.strokeWeight(w/350);
@@ -160,21 +173,30 @@ const Canv = (props) => {
       p5.line(excess,excess,w,excess);  
       p5.noStroke();
       p5.text(0, origin-15, origin+20);
+      //subSet lines;
+      p5.stroke(220,220,220);
+      for(let i=0; i<xSet.subSet.length; i++) {
+        let xDistance = xSet.subSet[i]*singleXSize+origin;
+        let yDistance = ySet.subSet[i]*singleYSize+origin;
+        //console.log(distance);
+        p5.line(xDistance,excess,xDistance,h);
+        p5.line(excess,yDistance,w,yDistance);
+      }
       for(let i=0; i<intervals; i++) {
         let distance = intervalDistance*i+excess;
         if(i!=5) {
-          p5.stroke(211,211,211);
+          p5.stroke(128,128,128);
           p5.line(distance,excess,distance,h);
           p5.line(excess,distance,w,distance);
           p5.noStroke();
-          p5.text(xSet[i],distance,origin+20);
-          p5.text(ySet[(intervals-(i+1))],origin-15,distance+7);
+          p5.text(xSet.mainSet[i],distance,origin+20);
+          p5.text(ySet.mainSet[(intervals-(i+1))],origin-15,distance+7);
         }
       }
       //draw plotpoints
-      p5.stroke(211,211,211);
+      p5.stroke(0);
       for(let i=0; i<plotPoints.length; i++) {
-        p5.rect(plotPoints[i][0]+origin, origin-(plotPoints[i][1]),5,5);
+        //p5.rect(plotPoints[i][0]+origin, origin-(plotPoints[i][1]),5,5);
         if(i != plotPoints.length-1) {
           p5.line(plotPoints[i][0]+origin, origin-(plotPoints[i][1]), plotPoints[i+1][0]+origin, origin-(plotPoints[i+1][1]) );
         }
@@ -184,6 +206,7 @@ const Canv = (props) => {
         let distance = intervalDistance*i+excess;
       }
       isGraph = false;
+      console.log(xSet.subSet);
     }
   };
 
