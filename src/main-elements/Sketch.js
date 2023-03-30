@@ -73,9 +73,9 @@ function createsubSet(set) {
     subCount = 5;
   }
   let scalar = Math.abs((set.mainSet[0] - set.mainSet[1])/subCount);
-  for(var i=0; i<set.mainSet.length-1; i++) {
-    for(var j=1; j<subCount; j++) {
-      set.subSet.push(Math.round((100*(set.mainSet[i]+(scalar*j))))/100);
+  for(var i=0; i<set.mainSet.length; i++) {
+    for(var j=0; j<subCount; j++) {
+      set.subSet.push(Math.round((1000*(set.mainSet[i]+(scalar*j))))/1000);
     }
   }
 }
@@ -88,8 +88,8 @@ function setSingleSizes() {
 
 function iterate(equation) {
   let dataSet = [];
-  for(let i=0; i<xSet.mainSet.length; i++) {
-    dataSet.push(calculate(equation, xSet.mainSet[i]));
+  for(let i=0; i<xSet.subSet.length; i++) {
+    dataSet.push(Math.round(calculate(equation, xSet.subSet[i])*1000)/1000);
   }
   return dataSet;
 }
@@ -109,8 +109,8 @@ function calculate(input, v = 0) {
 
 const plot = (dataSet) => {
   for(let i=0; i<dataSet.length; i++) {
-    xPoints.push(xSet.mainSet[i] * singleXSize);
-    yPoints.push(dataSet[i] * singleYSize);
+    xPoints.push(Math.round(1000*(xSet.subSet[i] * singleXSize))/1000);
+    yPoints.push(Math.round(1000*(dataSet[i] * singleYSize))/1000);
     plotPoints.push([xPoints[i], yPoints[i]]);
   }
 }
@@ -133,7 +133,6 @@ const Canv = (props) => {
     // use parent to render the canvas in this ref
     // (without that p5 will render the canvas outside of your component)
     p5.createCanvas(w+excess, h+excess).parent(canvasParentRef);
-    
     //functionInput.addEventListener("input", () => handleInput());  
     //functionInput.addEventListener("keydown", () => handleInput());
     let plusYButton = document.getElementById("plus-y-button");
@@ -144,8 +143,8 @@ const Canv = (props) => {
     plusXButton.addEventListener("click", () => increaseSet(xSet));
     let minusXButton = document.getElementById("minus-x-button");
     minusXButton.addEventListener("click", () => decreaseSet(xSet));
-          createsubSet(xSet);
-      createsubSet(ySet);
+    createsubSet(xSet);
+    createsubSet(ySet);
   };
 
 
@@ -157,22 +156,7 @@ const Canv = (props) => {
       p5.rectMode(p5.CENTER);
       p5.textAlign(p5.CENTER);
       p5.strokeWeight(w/350);
-      p5.stroke(100,200,60);
       p5.textSize(w/50)
-      //x-origin
-      p5.line(origin,excess,origin,h);
-      //y-origin
-      p5.line(excess,origin,w,origin);
-      //left-border
-      p5.line(excess,excess,excess,h);
-      //bottom_border
-      p5.line(excess,h,w,h);
-      //right-border
-      p5.line(w,excess,h,w);
-      //top-border
-      p5.line(excess,excess,w,excess);  
-      p5.noStroke();
-      p5.text(0, origin-15, origin+20);
       //subSet lines;
       p5.stroke(220,220,220);
       for(let i=0; i<xSet.subSet.length; i++) {
@@ -193,6 +177,21 @@ const Canv = (props) => {
           p5.text(ySet.mainSet[(intervals-(i+1))],origin-15,distance+7);
         }
       }
+      p5.stroke(100,200,60);
+      //x-origin
+      p5.line(origin,excess,origin,h);
+      //y-origin
+      p5.line(excess,origin,w,origin);
+      //left-border
+      p5.line(excess,excess,excess,h);
+      //bottom_border
+      p5.line(excess,h,w,h);
+      //right-border
+      p5.line(w,excess,h,w);
+      //top-border
+      p5.line(excess,excess,w,excess);  
+      p5.noStroke();
+      p5.text(0, origin-15, origin+20);
       //draw plotpoints
       p5.stroke(0);
       for(let i=0; i<plotPoints.length; i++) {
@@ -201,12 +200,7 @@ const Canv = (props) => {
           p5.line(plotPoints[i][0]+origin, origin-(plotPoints[i][1]), plotPoints[i+1][0]+origin, origin-(plotPoints[i+1][1]) );
         }
       }
-  
-      for(let i=0; i<ySet.length; i++) {
-        let distance = intervalDistance*i+excess;
-      }
-      isGraph = false;
-      console.log(xSet.subSet);
+      isGraph = true; 
     }
   };
 
