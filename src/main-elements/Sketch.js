@@ -3,12 +3,10 @@ import Sketch from 'react-p5';
 import { evaluateTex, parseTex } from 'tex-math-parser';
 //import * as math from 'mathjs';
 import {derivative, evaluate, compile} from 'mathjs';
-// let test = parseTex('x^2');
-// test = derivative(test, 'x');
+// let test = parseTex('x^3');
+// test = derivative(derivative(test, 'x'), 'x');
 // console.log(test);
 // console.log(test.evaluate({x: 2}));
-
-
 
 let functionInput = "";
 
@@ -20,8 +18,8 @@ export function setFunctionInput(input) {
 const excess = 10;
 const h = 550;
 const w = 550;
-let xSet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], derivSet: [],factorCount: 1};
-let ySet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [],derivSet: [], factorCount: 1};
+let xSet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], derivSet: [], secondDerivSet: [], factorCount: 1};
+let ySet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], derivSet: [], secondDerivSet: [], factorCount: 1};
 let intervals = 11;
 const origin = (w+excess)/2;
 const graphLength = ((origin*2)-(excess*2));
@@ -30,9 +28,9 @@ let singleXSize = graphLength/Math.abs((xSet.mainSet[0]-xSet.mainSet[xSet.mainSe
 let intervalDistance = graphLength/(intervals-1);
 let isGraph = true;
 let texts = [];
-let xPoints = {firstDeriv: [], secondDeriv: []};
-let yPoints = {firstDeriv: [], secondDeriv: []};
-var plotPoints = {firstDeriv: [], secondDeriv: []};
+let xPoints = {firstDeriv: [], secondDeriv: [], thirdDeriv: []};
+let yPoints = {firstDeriv: [], secondDeriv: [], thirdDeriv: []};
+var plotPoints = {firstDeriv: [], secondDeriv: [], thirdDeriv: []};
 
 function increaseSet(set) {
   let factor;
@@ -94,11 +92,13 @@ function iterate(eq) {
   const equation = parseTex(eq);
   let firstDerivSet = [];
   let secondDerivSet = [];
+  let thirdDerivSet = [];
   for(let i=0; i<xSet.subSet.length; i++) {
     firstDerivSet.push(Math.round(calculate(equation, xSet.subSet[i])*1000)/1000);
     secondDerivSet.push(Math.round((calculate(derivative(equation, 'x'),xSet.subSet[i]))*1000)/1000);
+    thirdDerivSet.push(Math.round((calculate(derivative(derivative(equation, 'x'), 'x'),xSet.subSet[i]))*1000)/1000);
   }
-  return [firstDerivSet, secondDerivSet];
+  return [firstDerivSet, secondDerivSet, thirdDerivSet];
 }
 
 function calculate(input, v = 0) {
@@ -119,20 +119,24 @@ const plot = (sets) => {
     xPoints.firstDeriv.push(Math.round((xSet.subSet[i] * singleXSize)*1000)/1000);
     yPoints.firstDeriv.push(Math.round((sets[0][i] * singleYSize)*1000)/1000);
     yPoints.secondDeriv.push(Math.round((sets[1][i] * singleYSize)*1000)/1000);
+    yPoints.thirdDeriv.push(Math.round((sets[2][i] * singleYSize)*1000)/1000);
     plotPoints.firstDeriv.push([xPoints.firstDeriv[i], yPoints.firstDeriv[i]]);
     plotPoints.secondDeriv.push([xPoints.firstDeriv[i], yPoints.secondDeriv[i]]);
+    plotPoints.thirdDeriv.push([xPoints.firstDeriv[i], yPoints.thirdDeriv[i]]);
   }
-  console.log(yPoints.secondDeriv);
 }
 
 function handleInput() {
   try {
       plotPoints.firstDeriv = [];
       plotPoints.secondDeriv = [];
+      plotPoints.thirdDeriv = [];
       xPoints.firstDeriv = [];
       xPoints.secondDeriv = [];
+      xPoints.thirdDeriv = [];
       yPoints.firstDeriv = [];
       yPoints.secondDeriv = [];
+      yPoints.thirdDeriv = [];
       plot(iterate(functionInput));
   } catch {
     console.log("this aint it bro");  
@@ -216,6 +220,9 @@ const Canv = (props) => {
           p5.line(plotPoints.firstDeriv[i][0]+origin, origin-(plotPoints.firstDeriv[i][1]), plotPoints.firstDeriv[i+1][0]+origin, origin-(plotPoints.firstDeriv[i+1][1]) );
           p5.stroke(0,0,139)
           p5.line(plotPoints.secondDeriv[i][0]+origin, origin-(plotPoints.secondDeriv[i][1]), plotPoints.secondDeriv[i+1][0]+origin, origin-(plotPoints.secondDeriv[i+1][1]) );
+          p5.stroke(255,0,0);
+          p5.line(plotPoints.thirdDeriv[i][0]+origin, origin-(plotPoints.thirdDeriv[i][1]), plotPoints.thirdDeriv[i+1][0]+origin, origin-(plotPoints.thirdDeriv[i+1][1]) );
+
         }
       }
       isGraph = true; 
