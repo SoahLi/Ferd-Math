@@ -1,6 +1,14 @@
 import React from "react";
 import Sketch from 'react-p5';
-import { evaluateTex } from 'tex-math-parser';
+import { evaluateTex, parseTex } from 'tex-math-parser';
+//import * as math from 'mathjs';
+import {derivative, evaluate, compile} from 'mathjs';
+// let test = parseTex('x^2');
+// test = derivative(test, 'x');
+// console.log(test);
+// console.log(test.evaluate({x: 2}));
+
+
 
 let functionInput = "";
 
@@ -12,12 +20,8 @@ export function setFunctionInput(input) {
 const excess = 10;
 const h = 550;
 const w = 550;
-let xSet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], factorCount: 1};
-let subXSet = []
-let ySet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], factorCount: 1};
-let subYSet = []
-let xSetFactorCount = 1;
-let ySetFactorCount = 1;
+let xSet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], derivSet: [],factorCount: 1};
+let ySet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [],derivSet: [], factorCount: 1};
 let intervals = 11;
 const origin = (w+excess)/2;
 const graphLength = ((origin*2)-(excess*2));
@@ -26,9 +30,9 @@ let singleXSize = graphLength/Math.abs((xSet.mainSet[0]-xSet.mainSet[xSet.mainSe
 let intervalDistance = graphLength/(intervals-1);
 let isGraph = true;
 let texts = [];
-let xPoints = []
-let yPoints = [];
-var plotPoints = [];
+let xPoints = {firstDeriv: [], secondDeriv: []};
+let yPoints = {firstDeriv: [], secondDeriv: []};
+var plotPoints = {firstDeriv: [], secondDeriv: []};
 
 function increaseSet(set) {
   let factor;
@@ -67,12 +71,12 @@ function decreaseSet(set) {
 function createsubSet(set) {
   set.subSet = [];
   let subCount;
-  if (set.mainSet[0]%2 == 0) {
+  if (set.mainSet[set.mainSet.length-1]%2 == 0) {
     subCount = 4;
   } else {
     subCount = 5;
   }
-  let scalar = Math.abs((set.mainSet[0] - set.mainSet[1])/subCount);
+  let scalar = Math.abs(Math.round((1000*(set.mainSet[0] - set.mainSet[1])/subCount))/1000);
   for(var i=0; i<set.mainSet.length; i++) {
     for(var j=0; j<subCount; j++) {
       set.subSet.push(Math.round((1000*(set.mainSet[i]+(scalar*j))))/1000);
@@ -86,47 +90,58 @@ function setSingleSizes() {
   singleXSize = graphLength/Math.abs((xSet.mainSet[0]-xSet.mainSet[xSet.mainSet.length-1]));
 }
 
-function iterate(equation) {
-  let dataSet = [];
+function iterate(eq) {
+  const equation = parseTex(eq);
+  let firstDerivSet = [];
+  let secondDerivSet = [];
   for(let i=0; i<xSet.subSet.length; i++) {
-    dataSet.push(Math.round(calculate(equation, xSet.subSet[i])*1000)/1000);
+    firstDerivSet.push(Math.round(calculate(equation, xSet.subSet[i])*1000)/1000);
+    secondDerivSet.push(Math.round((calculate(derivative(equation, 'x'),xSet.subSet[i]))*1000)/1000);
   }
-  return dataSet;
+  return [firstDerivSet, secondDerivSet];
 }
 
 function calculate(input, v = 0) {
   const scope = {x: v};
   try {
-    const result = evaluateTex(input, scope).evaluated;
+    const result = input.evaluate(scope);
     return result;
   }
   catch {
-    //console.log("this ain't a function yo");
     return undefined;
   }
 }
 
 
-const plot = (dataSet) => {
-  for(let i=0; i<dataSet.length; i++) {
-    xPoints.push(Math.round(1000*(xSet.subSet[i] * singleXSize))/1000);
-    yPoints.push(Math.round(1000*(dataSet[i] * singleYSize))/1000);
-    plotPoints.push([xPoints[i], yPoints[i]]);
+const plot = (sets) => {
+  const setLength = sets[0].length;
+  for(let i=0; i<setLength; i++) {
+    xPoints.firstDeriv.push(Math.round((xSet.subSet[i] * singleXSize)*1000)/1000);
+    yPoints.firstDeriv.push(Math.round((sets[0][i] * singleYSize)*1000)/1000);
+    yPoints.secondDeriv.push(Math.round((sets[1][i] * singleYSize)*1000)/1000);
+    plotPoints.firstDeriv.push([xPoints.firstDeriv[i], yPoints.firstDeriv[i]]);
+    plotPoints.secondDeriv.push([xPoints.firstDeriv[i], yPoints.secondDeriv[i]]);
   }
+  console.log(yPoints.secondDeriv);
 }
 
-
 function handleInput() {
-  if(calculate(functionInput) != undefined) {
-    plotPoints = [];
-    xPoints = [];
-    yPoints = [];
-    plot(iterate(functionInput));
+  try {
+      plotPoints.firstDeriv = [];
+      plotPoints.secondDeriv = [];
+      xPoints.firstDeriv = [];
+      xPoints.secondDeriv = [];
+      yPoints.firstDeriv = [];
+      yPoints.secondDeriv = [];
+      plot(iterate(functionInput));
+  } catch {
+    console.log("this aint it bro");  
   }
   createsubSet(xSet);
   createsubSet(ySet);
   isGraph = true;
 }
+
 
 const Canv = (props) => {
   const setup = (p5, canvasParentRef) => {
@@ -155,14 +170,15 @@ const Canv = (props) => {
       p5.clear();
       p5.rectMode(p5.CENTER);
       p5.textAlign(p5.CENTER);
-      p5.strokeWeight(w/350);
+      p5.strokeWeight(w/600);
       p5.textSize(w/50)
       //subSet lines;
       p5.stroke(220,220,220);
-      for(let i=0; i<xSet.subSet.length; i++) {
+      p5.strokeWeight(w/350);
+      let subLength = xSet.subSet.length > ySet.subSet.length ? xSet.subSet.length : ySet.subSet.length;
+      for(let i=0; i<subLength; i++) {
         let xDistance = xSet.subSet[i]*singleXSize+origin;
         let yDistance = ySet.subSet[i]*singleYSize+origin;
-        //console.log(distance);
         p5.line(xDistance,excess,xDistance,h);
         p5.line(excess,yDistance,w,yDistance);
       }
@@ -193,11 +209,13 @@ const Canv = (props) => {
       p5.noStroke();
       p5.text(0, origin-15, origin+20);
       //draw plotpoints
-      p5.stroke(0);
-      for(let i=0; i<plotPoints.length; i++) {
+      for(let i=0; i<plotPoints.firstDeriv.length; i++) {
         //p5.rect(plotPoints[i][0]+origin, origin-(plotPoints[i][1]),5,5);
-        if(i != plotPoints.length-1) {
-          p5.line(plotPoints[i][0]+origin, origin-(plotPoints[i][1]), plotPoints[i+1][0]+origin, origin-(plotPoints[i+1][1]) );
+        if(i != plotPoints.firstDeriv.length-1) {
+          p5.stroke(0);
+          p5.line(plotPoints.firstDeriv[i][0]+origin, origin-(plotPoints.firstDeriv[i][1]), plotPoints.firstDeriv[i+1][0]+origin, origin-(plotPoints.firstDeriv[i+1][1]) );
+          p5.stroke(0,0,139)
+          p5.line(plotPoints.secondDeriv[i][0]+origin, origin-(plotPoints.secondDeriv[i][1]), plotPoints.secondDeriv[i+1][0]+origin, origin-(plotPoints.secondDeriv[i+1][1]) );
         }
       }
       isGraph = true; 
