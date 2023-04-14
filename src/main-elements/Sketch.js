@@ -1,8 +1,12 @@
+/*
+Division not working
+*/
+
 import React from "react";
 import Sketch from 'react-p5';
-import { evaluateTex, parseTex } from 'tex-math-parser';
+import {parseTex, evaluateTex} from 'tex-math-parser';
 //import * as math from 'mathjs';
-import {derivative, evaluate, compile} from 'mathjs';
+import {parse, derivative, evaluate, compile} from 'mathjs';
 // let test = parseTex('x^3');
 // test = derivative(derivative(test, 'x'), 'x');
 // console.log(test);
@@ -12,6 +16,7 @@ let functionInput = "";
 
 export function setFunctionInput(input) {
   functionInput = String.raw`${input}`;
+  //functionInput = input;
   handleInput();
 }
 
@@ -74,10 +79,10 @@ function createsubSet(set) {
   } else {
     subCount = 5;
   }
-  let scalar = Math.abs(Math.round((1000*(set.mainSet[0] - set.mainSet[1])/subCount))/1000);
+  let scalar = Math.abs(Math.round((100000*(set.mainSet[0] - set.mainSet[1])/subCount))/100000);
   for(var i=0; i<set.mainSet.length; i++) {
     for(var j=0; j<subCount; j++) {
-      set.subSet.push(Math.round((1000*(set.mainSet[i]+(scalar*j))))/1000);
+      set.subSet.push(Math.round((100000*(set.mainSet[i]+(scalar*j))))/100000);
     }
   }
 }
@@ -89,14 +94,23 @@ function setSingleSizes() {
 }
 
 function iterate(eq) {
-  const equation = parseTex(eq);
+  eq = eq.replace('\cdot','*');
+  console.log(eq);
+  const equation = parseTex(eq); 
+  const x = parse('x');
+  const test = parseTex("2\cdot x");
+  console.log(equation);
+  console.log(test);
+  console.log(derivative(test, x).toString());
   let firstDerivSet = [];
   let secondDerivSet = [];
   let thirdDerivSet = [];
   for(let i=0; i<xSet.subSet.length; i++) {
-    firstDerivSet.push(Math.round(calculate(equation, xSet.subSet[i])*1000)/1000);
-    secondDerivSet.push(Math.round((calculate(derivative(equation, 'x'),xSet.subSet[i]))*1000)/1000);
-    thirdDerivSet.push(Math.round((calculate(derivative(derivative(equation, 'x'), 'x'),xSet.subSet[i]))*1000)/1000);
+    //console.log(derivative(equation, x),xSet.subSet[i]);
+    //console.log(calculate(equation, xSet.subSet[i]));
+    firstDerivSet.push(Math.round(calculate(equation, xSet.subSet[i])*100000)/100000);
+    //secondDerivSet.push(Math.round((calculate(derivative(equation, x),xSet.subSet[i]))*100000)/100000);
+    //thirdDerivSet.push(Math.round((calculate(derivative(derivative(equation, x), x),xSet.subSet[i]))*100000)/100000);
   }
   return [firstDerivSet, secondDerivSet, thirdDerivSet];
 }
@@ -116,10 +130,10 @@ function calculate(input, v = 0) {
 const plot = (sets) => {
   const setLength = sets[0].length;
   for(let i=0; i<setLength; i++) {
-    xPoints.firstDeriv.push(Math.round((xSet.subSet[i] * singleXSize)*1000)/1000);
-    yPoints.firstDeriv.push(Math.round((sets[0][i] * singleYSize)*1000)/1000);
-    yPoints.secondDeriv.push(Math.round((sets[1][i] * singleYSize)*1000)/1000);
-    yPoints.thirdDeriv.push(Math.round((sets[2][i] * singleYSize)*1000)/1000);
+    xPoints.firstDeriv.push(Math.round((xSet.subSet[i] * singleXSize)*100000)/100000);
+    yPoints.firstDeriv.push(Math.round((sets[0][i] * singleYSize)*100000)/100000);
+    yPoints.secondDeriv.push(Math.round((sets[1][i] * singleYSize)*100000)/100000);
+    yPoints.thirdDeriv.push(Math.round((sets[2][i] * singleYSize)*100000)/100000);
     plotPoints.firstDeriv.push([xPoints.firstDeriv[i], yPoints.firstDeriv[i]]);
     plotPoints.secondDeriv.push([xPoints.firstDeriv[i], yPoints.secondDeriv[i]]);
     plotPoints.thirdDeriv.push([xPoints.firstDeriv[i], yPoints.thirdDeriv[i]]);
@@ -152,8 +166,6 @@ const Canv = (props) => {
     // use parent to render the canvas in this ref
     // (without that p5 will render the canvas outside of your component)
     p5.createCanvas(w+excess, h+excess).parent(canvasParentRef);
-    //functionInput.addEventListener("input", () => handleInput());  
-    //functionInput.addEventListener("keydown", () => handleInput());
     let plusYButton = document.getElementById("plus-y-button");
     plusYButton.addEventListener("click", () => increaseSet(ySet));
     let minusYButton = document.getElementById("minus-y-button");
