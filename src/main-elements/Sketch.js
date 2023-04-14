@@ -13,13 +13,22 @@ import {parse, derivative, evaluate, compile} from 'mathjs';
 // console.log(test.evaluate({x: 2}));
 
 let functionInput = "";
+/* FOR MATHQUILL INPUT 
 
 export function setFunctionInput(input) {
   functionInput = String.raw`${input}`;
   //functionInput = input;
   handleInput();
 }
+*/
 
+// FOR REG INPUT
+export function setFunctionInput() {
+  functionInput = document.getElementById("input-field").value;
+  console.log(functionInput);
+  //functionInput = input;
+  handleInput();
+}
 const excess = 10;
 const h = 550;
 const w = 550;
@@ -92,25 +101,21 @@ function setSingleSizes() {
   singleYSize = graphLength/Math.abs((ySet.mainSet[0]-ySet.mainSet[ySet.mainSet.length-1]));
   singleXSize = graphLength/Math.abs((xSet.mainSet[0]-xSet.mainSet[xSet.mainSet.length-1]));
 }
-
+/*
+LN NOT WORKING
+*/
 function iterate(eq) {
-  eq = eq.replace('\cdot','*');
-  console.log(eq);
-  const equation = parseTex(eq); 
+  const equation = parse(eq); 
   const x = parse('x');
-  const test = parseTex("2\cdot x");
-  console.log(equation);
-  console.log(test);
-  console.log(derivative(test, x).toString());
   let firstDerivSet = [];
   let secondDerivSet = [];
   let thirdDerivSet = [];
   for(let i=0; i<xSet.subSet.length; i++) {
     //console.log(derivative(equation, x),xSet.subSet[i]);
-    //console.log(calculate(equation, xSet.subSet[i]));
+    console.log(calculate(equation, xSet.subSet[i]));
     firstDerivSet.push(Math.round(calculate(equation, xSet.subSet[i])*100000)/100000);
-    //secondDerivSet.push(Math.round((calculate(derivative(equation, x),xSet.subSet[i]))*100000)/100000);
-    //thirdDerivSet.push(Math.round((calculate(derivative(derivative(equation, x), x),xSet.subSet[i]))*100000)/100000);
+    secondDerivSet.push(Math.round((calculate(derivative(equation, x),xSet.subSet[i]))*100000)/100000);
+    thirdDerivSet.push(Math.round((calculate(derivative(derivative(equation, x), x),xSet.subSet[i]))*100000)/100000);
   }
   return [firstDerivSet, secondDerivSet, thirdDerivSet];
 }

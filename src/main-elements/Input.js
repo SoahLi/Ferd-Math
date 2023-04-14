@@ -8,19 +8,21 @@ import mySketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/
 addStyles()
 
 function Input () {
-  const [latex, setLatex] = useState("");
+  //const [latex, setLatex] = useState("");
+  const [text, setText] = useState("");
 
   return (
-    <div>
-      <EditableMathField
-        id="math-field"
-        latex={latex}
-        onChange={(mathField) => {
-          setLatex(mathField.latex());
-        }}
-      />
-      <span>{setFunctionInput(latex)}</span>
-    </div>
+    // <div>
+    //   <EditableMathField
+    //     id="math-field"
+    //     latex={latex}
+    //     onChange={(mathField) => {
+    //       setLatex(mathField.latex());
+    //     }}
+    //   />
+    //   <span>{setFunctionInput(latex)}</span>
+    // </div>
+    <input className="input-field" id="input-field" onChange={()=>setFunctionInput()}></input>
   )
 }
 
