@@ -25,7 +25,6 @@ export function setFunctionInput(input) {
 // FOR REG INPUT
 export function setFunctionInput() {
   functionInput = document.getElementById("input-field").value;
-  console.log(functionInput);
   //functionInput = input;
   handleInput();
 }
@@ -104,7 +103,7 @@ function setSingleSizes() {
 /*
 LN NOT WORKING
 */
-function iterate(eq) {
+export function iterate(eq) {
   const equation = parse(eq); 
   const x = parse('x');
   let firstDerivSet = [];
@@ -112,7 +111,7 @@ function iterate(eq) {
   let thirdDerivSet = [];
   for(let i=0; i<xSet.subSet.length; i++) {
     //console.log(derivative(equation, x),xSet.subSet[i]);
-    console.log(calculate(equation, xSet.subSet[i]));
+    //console.log(calculate(equation, xSet.subSet[i]));
     firstDerivSet.push(Math.round(calculate(equation, xSet.subSet[i])*100000)/100000);
     secondDerivSet.push(Math.round((calculate(derivative(equation, x),xSet.subSet[i]))*100000)/100000);
     thirdDerivSet.push(Math.round((calculate(derivative(derivative(equation, x), x),xSet.subSet[i]))*100000)/100000);
