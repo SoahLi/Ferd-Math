@@ -24,7 +24,10 @@ function Input () {
     //   />
     //   <span>{setFunctionInput(latex)}</span>
     // </div>
-    <input className="input-field" id="input-field" onChange={()=>{setFunctionInput(); importFunction()}}></input>
+    <div>
+      <input className="input-field" id="input-field" onChange={()=>{}}></input>
+      <button className="enter-button" onClick={() => {setFunctionInput(); importFunction()}}>Enter</button>
+    </div>
   )
 }
 
