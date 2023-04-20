@@ -1,19 +1,21 @@
 import {OperatorNode, ConstantNode, SymbolNode, ParenthesisNode, FunctionNode, parse, derivative, evaluate, compile, simplify} from 'mathjs';
+import Answer from './Answer';
 
 var steps = [];
 export function importFunction() {
+  steps = [];
+  let deriv;
   try { 
-    solve(parse(document.getElementById('input-field').value));
+    deriv = solve(parse(document.getElementById('input-field').value));
   } catch {
     console.log("error");
   }
+  if(deriv != undefined) {
+    steps.push(deriv);
+  }
+  console.log(steps.length);
+  Answer(steps);
 }
-
-/* TODO 
-SEPERATE NODE FINDER FROM SOLVE
-SEPERATE NODE FINDER FROM SOLVE
-SEPERATE NODE FINDER FROM SOLVE
-*/
 
 function functionRule(node) {
   let equation = node.args[0];
