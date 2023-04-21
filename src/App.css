@@ -44,3 +44,7 @@
 .inputs {
   position: absolute;
 }
+
+.answer {
+  width: 700px;
+}

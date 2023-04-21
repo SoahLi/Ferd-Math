@@ -1,12 +1,19 @@
 import {OperatorNode, ConstantNode, SymbolNode, ParenthesisNode, FunctionNode, parse, derivative, evaluate, compile, simplify} from 'mathjs';
-import Answer from './Answer';
 
 var steps = [];
 export function importFunction() {
   steps = [];
   let deriv;
   try { 
-    deriv = solve(parse(document.getElementById('input-field').value));
+    let equation = document.getElementById('input-field').value
+    steps.push("Original Equation\n")
+    steps.push(equation);
+    if (simplify(equation).toString() !== parse(equation).toString()){
+      steps.push("Simplify the equation")
+      equation = simplify(equation).toString();
+      steps.push(equation)
+    }
+    deriv = solve(parse(equation));
   } catch {
     console.log("error");
   }
@@ -14,7 +21,7 @@ export function importFunction() {
     steps.push(deriv);
   }
   console.log(steps.length);
-  Answer(steps);
+  return steps
 }
 
 function functionRule(node) {
@@ -47,7 +54,9 @@ function productRule(left_node, right_node) {
   console.log("executing product rule");
   let left_equation = left_node.toString();
   let right_equation = right_node.toString();
-  return "("+left_equation+")*("+solve(right_node)+")+("+right_equation+")*("+solve(left_node)+")";
+  let equation = "("+left_equation+")*("+solve(right_node)+")+("+right_equation+")*("+solve(left_node)+")";
+  steps.push("the first times the derivative of the second plus the second times the derivative of the first");
+  return equation;
 }
 
 
@@ -55,7 +64,14 @@ function quotientRule(left_node, right_node) {
   console.log("executing quotient rule");
   let left_equation = left_node.toString();
   let right_equation = right_node.toString();
-  return ("(("+right_equation+")*("+solve(left_node)+"))-(("+left_equation+")*("+solve(right_node)+"))/("+right_equation+")^2");
+  let left_derivative = solve(left_node);
+  let right_derivative = solve(right_node);
+  let equation =  ("(("+right_equation+")*("+left_derivative+"))-(("+left_equation+")*("+right_derivative+"))/("+right_equation+")^2");
+  steps.push("the denominator times the derivative of the numerator minus the numerator times the derivative of the denominator all over the denominator squared");
+  //$$ FOR MATHJAX. DOES NOT WORK
+  steps.push("the denominators derivative = " + "$$"+left_derivative+"$$");
+  steps.push("the numerators derivative = " + right_derivative);
+  return equation;
 }
 
 const difunctionRules = {"^": powerRule, "/": quotientRule, "*": productRule};
