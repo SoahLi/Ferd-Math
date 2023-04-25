@@ -23,8 +23,8 @@ export function setFunctionInput(input) {
 */
 
 // FOR REG INPUT
-export function setFunctionInput() {
-  functionInput = document.getElementById("input-field").value;
+export function setFunctionInput(equation) {
+  functionInput = equation
   //functionInput = input;
   handleInput();
 }
