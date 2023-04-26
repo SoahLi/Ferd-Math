@@ -1,10 +1,14 @@
 /* TODO
-
 *better ui especially for Answer div
 *touch up sketch.js
 *Components in Wrong order (should be input, plus minus buttons, Answer div)   
-*Some constants that are operations(1/2) output derivative as the same as original
 *expected raw latex when using nerdamer but tex output is simplified
+*figure out whether to simplify equation in beginning of solving
+*/
+/*
+TODO 2
+
+*refactor sketch.js
 */
 
 import { MathComponent } from 'mathjax-react';
@@ -36,7 +40,6 @@ export function importFunction(equation) {
     console.log("error");
   }
   if(deriv != undefined) {
-    steps.push("the derivative of the equation is");
     deriv = Algebrite.simplify(deriv).toString();
     steps.push(<MathComponent tex={nerdamer(deriv).toTeX({simplify: false})}/>);
   }
@@ -120,11 +123,18 @@ function solve(mathTree) {
   console.log(mathTree.toString());
   console.log(tree.hasOwnProperty('args'));
   while (true) {
-    if (tree.hasOwnProperty('args')) {
-      break;
-    } else {
+    if (tree.isParenthesisNode) {
       tree = tree.content;
+    } else {
+      break
     }
+  }
+  console.log("finish");
+  if(tree.isSymbolNode) {
+    return "1";
+  }
+  if(tree.isConstantNode) {
+    return "0";
   }
   console.log("tree");
   console.log(tree);

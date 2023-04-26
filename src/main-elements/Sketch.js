@@ -188,12 +188,12 @@ const Canv = (props) => {
   const draw = (p5) => {
     if(isGraph == true) {
       p5.clear();
+      p5.stroke(220);
       p5.rectMode(p5.CENTER);
       p5.textAlign(p5.CENTER);
       p5.strokeWeight(w/600);
       p5.textSize(w/50)
       //subSet lines;
-      p5.stroke(220,220,220);
       p5.strokeWeight(w/350);
       let subLength = xSet.subSet.length > ySet.subSet.length ? xSet.subSet.length : ySet.subSet.length;
       for(let i=0; i<subLength; i++) {
@@ -209,8 +209,6 @@ const Canv = (props) => {
           p5.line(distance,excess,distance,h);
           p5.line(excess,distance,w,distance);
           p5.noStroke();
-          p5.text(xSet.mainSet[i],distance,origin+20);
-          p5.text(ySet.mainSet[(intervals-(i+1))],origin-15,distance+7);
         }
       }
       p5.stroke(100,200,60);
@@ -239,6 +237,21 @@ const Canv = (props) => {
           p5.stroke(255,0,0);
           p5.line(plotPoints.thirdDeriv[i][0]+origin, origin-(plotPoints.thirdDeriv[i][1]), plotPoints.thirdDeriv[i+1][0]+origin, origin-(plotPoints.thirdDeriv[i+1][1]) );
 
+        }
+      }
+      p5.stroke(255);
+      p5.fill(255);
+      p5.rect(0,h, excess+6, h*2);
+      p5.rect(0,h+excess,w*2,excess+6);
+      p5.rect(excess,0,w*2,excess+6);
+      p5.rect(w*2+1.5,excess,w*2);
+      p5.stroke(0,0,0);
+      p5.strokeWeight(w/350);
+      for(let i=0; i<intervals; i++) {
+        if(i!=5) {
+          let distance = intervalDistance*i+excess;
+          p5.text(xSet.mainSet[i],distance,origin+20);
+          p5.text(ySet.mainSet[(intervals-(i+1))],origin-15,distance+7);
         }
       }
       isGraph = true; 
