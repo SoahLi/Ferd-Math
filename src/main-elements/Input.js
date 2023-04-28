@@ -11,52 +11,11 @@ const nerdamer = require("nerdamer/all.min");
 addStyles()
 
 
-function Input() {
+function Input({ steps, setSteps }) {
   const [input, setInput] = useState([]);
-  const [steps, setSteps] = useState([]);
-  const [method, setMethod] = useState([]);
   const [text, setText] = useState('');
   const [latex, setLatex] = useState('');
-
-  // const parseSteps = (newSteps) => {
-  //   let parsedSteps = [];
-  //   for (let i=0; i<newSteps.length; i++) {
-  //     try {
-  //       var LaTeX = nerdamer(newSteps[i]).toTeX();
-  //       console.log(LaTeX);
-  //       parsedSteps.push(<MathComponent tex={LaTeX}/>);
-  //     } catch {
-  //       parsedSteps.push(<p>{steps[i]}</p>);
-  //     }
-  //   }
-  //   console.log(parsedSteps);
-  //   return parsedSteps;
-  // }
-
-  const combine = (mySteps, myExplanations) => {
-    const arr1 = mySteps;
-    const arr2 = myExplanations;
-    
-    const maxLength = Math.max(arr1.length, arr2.length);
-    
-    const result = [];
-    
-    for (let i = 0; i < maxLength; i++) {
-      if (i < arr1.length) {
-        result.push(arr1[i]);
-      }
-      if (i < arr2.length) {
-        result.push(arr2[i]);
-      }
-    }
-    console.log(result);
-    return result;
-  }
-
-  const handleInputChange = (event) => {
-    setInput(event.target.value);
-  };
-
+  
   const handleButtonClick = () => {
     setFunctionInput(text);
     let newSteps = importFunction(text);
@@ -70,18 +29,17 @@ function Input() {
 
   return (
     <div>
-    <EditableMathField 
-      latex={latex}
-      text={latex}
-      onChange={(mathField) => {
-          setText(mathField.text());
+      <EditableMathField 
+        latex={latex}
+        text={latex}
+        onChange={(mathField) => {
+            setText(mathField.text());
+          }
         }
-      }
-    />
+      />
       <button className="enter-button" onClick={handleButtonClick}>
         Enter
       </button>
-      <Answer className="answer" steps={steps}/>
     </div>
   );
 }
@@ -97,3 +55,41 @@ const Answer = (props) => {
 }
 
 export default Input;
+// const parseSteps = (newSteps) => {
+//   let parsedSteps = [];
+//   for (let i=0; i<newSteps.length; i++) {
+//     try {
+//       var LaTeX = nerdamer(newSteps[i]).toTeX();
+//       console.log(LaTeX);
+//       parsedSteps.push(<MathComponent tex={LaTeX}/>);
+//     } catch {
+//       parsedSteps.push(<p>{steps[i]}</p>);
+//     }
+//   }
+//   console.log(parsedSteps);
+//   return parsedSteps;
+// }
+
+  // const combine = (mySteps, myExplanations) => {
+  //   const arr1 = mySteps;
+  //   const arr2 = myExplanations;
+    
+  //   const maxLength = Math.max(arr1.length, arr2.length);
+    
+  //   const result = [];
+    
+  //   for (let i = 0; i < maxLength; i++) {
+  //     if (i < arr1.length) {
+  //       result.push(arr1[i]);
+  //     }
+  //     if (i < arr2.length) {
+  //       result.push(arr2[i]);
+  //     }
+  //   }
+  //   console.log(result);
+  //   return result;
+  // }
+
+  // const handleInputChange = (event) => {
+  //   setInput(event.target.value);
+  // };
