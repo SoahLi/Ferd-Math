@@ -28,9 +28,9 @@ export function setFunctionInput(equation) {
   //functionInput = input;
   handleInput();
 }
-const excess = 10;
-const h = 550;
-const w = 550;
+const excess = 5;
+const h = 510;
+const w = 510;
 let xSet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], derivSet: [], secondDerivSet: [], factorCount: 1};
 let ySet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], derivSet: [], secondDerivSet: [], factorCount: 1};
 let intervals = 11;
@@ -169,6 +169,7 @@ const Canv = (props) => {
   const setup = (p5, canvasParentRef) => {
     // use parent to render the canvas in this ref
     // (without that p5 will render the canvas outside of your component)
+    console.log(w+excess)
     p5.createCanvas(w+excess, h+excess).parent(canvasParentRef);
     let plusYButton = document.getElementById("plus-y-button");
     plusYButton.addEventListener("click", () => increaseSet(ySet));
@@ -188,13 +189,12 @@ const Canv = (props) => {
   const draw = (p5) => {
     if(isGraph == true) {
       p5.clear();
-      p5.stroke(220);
+      p5.stroke(246);
       p5.rectMode(p5.CENTER);
       p5.textAlign(p5.CENTER);
-      p5.strokeWeight(w/600);
-      p5.textSize(w/50)
+      p5.strokeWeight(w/1000);
+      p5.textSize(w/50);
       //subSet lines;
-      p5.strokeWeight(w/350);
       let subLength = xSet.subSet.length > ySet.subSet.length ? xSet.subSet.length : ySet.subSet.length;
       for(let i=0; i<subLength; i++) {
         let xDistance = xSet.subSet[i]*singleXSize+origin;
@@ -202,16 +202,17 @@ const Canv = (props) => {
         p5.line(xDistance,excess,xDistance,h);
         p5.line(excess,yDistance,w,yDistance);
       }
+      p5.strokeWeight(w/350);
       for(let i=0; i<intervals; i++) {
         let distance = intervalDistance*i+excess;
         if(i!=5) {
-          p5.stroke(128,128,128);
+          p5.stroke(15,44,71);
           p5.line(distance,excess,distance,h);
           p5.line(excess,distance,w,distance);
           p5.noStroke();
         }
       }
-      p5.stroke(100,200,60);
+      p5.stroke(15,44,71);
       //x-origin
       p5.line(origin,excess,origin,h);
       //y-origin
@@ -239,19 +240,20 @@ const Canv = (props) => {
 
         }
       }
-      p5.stroke(255);
-      p5.fill(255);
-      p5.rect(0,h, excess+6, h*2);
-      p5.rect(0,h+excess,w*2,excess+6);
-      p5.rect(excess,0,w*2,excess+6);
+      p5.stroke(15,44,71);
+      p5.fill(15,44,71);
+      p5.rect(0,h, excess+7, h*2);
+      p5.rect(0,h+excess-2,w*2,excess-10);
+      p5.rect(excess,0,w*2,excess+7);
       p5.rect(w*2+1.5,excess,w*2);
       p5.stroke(0,0,0);
-      p5.strokeWeight(w/350);
+      p5.fill(255);
+      //p5.strokeWeight(w/350);
       for(let i=0; i<intervals; i++) {
         if(i!=5) {
           let distance = intervalDistance*i+excess;
           p5.text(xSet.mainSet[i],distance,origin+20);
-          p5.text(ySet.mainSet[(intervals-(i+1))],origin-15,distance+7);
+          p5.text(ySet.mainSet[(intervals-(i+1))],origin-15,distance+4);
         }
       }
       isGraph = true; 

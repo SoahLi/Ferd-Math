@@ -113,9 +113,8 @@ function quotientRule(left_node, right_node) {
 
 const difunctionRules = {"^": powerRule, "/": quotientRule, "*": productRule};
 
-/*  
-DOES NOT WORK FOR EXPONENTS
-*/
+
+
 function solve(mathTree) {
   let tree = mathTree;
   let result;
@@ -129,7 +128,6 @@ function solve(mathTree) {
       break
     }
   }
-  console.log("finish");
   if(tree.isSymbolNode) {
     return "1";
   }
@@ -138,11 +136,11 @@ function solve(mathTree) {
   }
   console.log("tree");
   console.log(tree);
+
   let left_node = tree.args[0];
   let right_node = tree.args[1];
   let operator = tree.op;
   let statements = [];
-  console.log('constant or symbol node');
   if(operator == "+" || operator == "-") {
     console.log("non rule");
     for(let i=0; i<tree.args.length; i++) {
@@ -167,6 +165,10 @@ function solve(mathTree) {
     }
   } else {
     console.log("rules apply");
+    if(tree.args[0] instanceof ConstantNode && tree.args[1] instanceof ConstantNode) {
+      console.log("you made it");
+      return "0"
+    }
     if(((tree.args[0] instanceof OperatorNode || tree.args[0] instanceof ParenthesisNode || tree.args[0] instanceof FunctionNode) && (tree.args[1] instanceof OperatorNode || tree.args[1] instanceof ParenthesisNode || tree.args[1] instanceof FunctionNode)) || (operator == "^")) {
       console.log("double op");
       result = difunctionRules[operator](left_node, right_node);

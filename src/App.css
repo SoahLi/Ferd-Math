@@ -1,17 +1,16 @@
+body {
+  background-color: #f7c904;
+  
+}
+
+button {
+  cursor: pointer;
+}
+
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
 
 .App-header {
   background-color: #282c34;
@@ -28,36 +27,225 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#overlay {
+  position: fixed;
+  display: block;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+#overlay-text{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 50px;
+  color: white;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+}
+
+nav {
+  background-color: #0f2c47;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  overflow: hidden;
+  height: 60px;
+}
+
+.nav-left {
+  float:left;
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+/* Style the list */
+ul.breadcrumb {
+  padding: 10px 16px;
+  list-style: none;
+}
+
+/* Display list items side by side */
+ul.breadcrumb li {
+  display: inline;
+  font-size: 18px;
+}
+
+/* Add a slash symbol (/) before/behind each list item */
+ul.breadcrumb li+li:before {
+  background: none;
+  padding: 8px;
+  color: white;
+  content: "/\00a0";
+}
+
+/* Add a color to all links inside the list */
+ul.breadcrumb li button {
+  background: none;
+  color: white;
+  text-decoration: none;
+  border: none;
+  font-size: 17px;
+
+}
+
+/* Add a color on mouse-over */
+ul.breadcrumb li button:hover {
+  color: #01447e;
+  text-decoration: underline;
+}
+
+.nav-middle {
+  float: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+}
+
+
+.logo {
+  width: 400px;
 }
 
 .p5 {
   float: right;
+  margin-top: 10px;
+  margin-right: 10px;
 }
 
 .left-side {
   position: absolute;
+  width: 745px;
+  display: grid;
+  justify-content: center;
+}
+
+/* .examples {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+} */
+
+.enter-button {
+  font: bold;
+  border-radius:10px;
+  background-color: #f7c904; 
+  height: 55px;
+  padding-bottom: 20px;
+  border: none;
+  width: 40px;
 }
 
 .main-page-event-handlers {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 735px;
+}
+
+.input-with-enter-button {
+  border-radius: 10px 10px 10px 10px;
+  margin-top: 10px;
+  margin-left: 195px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 2px 50px rgba(0,0,0,0.2);
+}
+
+.zoom-buttons {
+  margin-top: 20px;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin-left: 10px;
+  margin-right: 6px;
+}
+
+.zoom-buttons button {
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  background-color: #f7c904;
+  border: none;
+  cursor: pointer;
+}
+
+.zoom-buttons .arrow-top,
+.zoom-buttons .arrow-bottom,
+.zoom-buttons .arrow-left,
+.zoom-buttons .arrow-right {
+  display: inline-block;
+  border-left: none;
+  border-bottom: none;
+  border-top: 2px solid #000;
+  border-right: 2px solid #000;
+}
+
+.zoom-buttons .arrow-top {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+.zoom-buttons .arrow-right {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.zoom-buttons .arrow-bottom {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(135deg);
+}
+
+.zoom-buttons .arrow-left {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%) rotate(-135deg);
 }
 
 .answer {
+  color: white;
   text-align: center;
-  width: 729px;
+  width: 720px;
 }
 
 .answer-div {
+  margin-top: 5px;
   display:inline-block;
-  background-color: #61dafb;
+  background-color: #0f2c47;
   border-radius: 10px;
-  border-color: #61dafb;
+
+}
+
+.mq-math-mode {
+  outline-color: none;
+  background-color: white;
+  width: 300px;
+  /* border-radius: 10px; */
+  padding: 5px;
+  box-shadow: none;
+}
+
+#my-input {
+  border-radius: 10px 0 0 10px;
+  border-width: 0;
+  border-color: #f7c904;
+  padding: 15px 0px 15px 20px;
+  box-shadow: none
 }

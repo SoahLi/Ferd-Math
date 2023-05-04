@@ -3,7 +3,7 @@ import { addStyles, EditableMathField, StaticMathField } from 'react-mathquill';
 import { parse } from 'mathjs';
 import {setFunctionInput} from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
 import mySketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
-import { importFunction } from "./Solve";
+import { importFunction } from "/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Solve.js";
 import { MathComponent } from "mathjax-react";
 const nerdamer = require("nerdamer/all.min");
 // inserts the required css to the <head> block.
@@ -28,8 +28,9 @@ function Input({ steps, setSteps }) {
   };
 
   return (
-    <div>
+    <div className='input-with-enter-button'>
       <EditableMathField 
+        id="my-input"
         latex={latex}
         text={latex}
         onChange={(mathField) => {
@@ -38,20 +39,10 @@ function Input({ steps, setSteps }) {
         }
       />
       <button className="enter-button" onClick={handleButtonClick}>
-        Enter
+        Go
       </button>
     </div>
   );
-}
-
-const Answer = (props) => {
-  return (
-    <div>
-        {props.steps.map((step, index) => (
-            <div className ='answer' key={index}>{step}</div>
-        ))}
-    </div>
-  )
 }
 
 export default Input;
