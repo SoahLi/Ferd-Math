@@ -72,7 +72,7 @@ function powerRule(leftNode, rightNode) {
   let left_equation = leftNode.toString();
   let equation = (right_equation+"*("+left_equation+"^("+(right_equation+"-1")+"))*("+derivative(left_equation, "x")+")");
   steps.push("apply the power rule and don't forget the baby");
-  steps.push(equation);
+  steps.push(<MathComponent tex={nerdamer(equation).toTeX({simplify: false})}/>);
   return equation; 
 }
 

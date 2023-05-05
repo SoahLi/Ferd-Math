@@ -8,7 +8,6 @@ import { useState } from 'react';
 const Main = (props) => {
 
   const [steps, setSteps] = useState([]);
-  const [overlayOn, setOverlayOn] = useState(true);
   function off() {
     document.getElementById("overlay").style.display = "none";
   }
@@ -19,24 +18,25 @@ const Main = (props) => {
   return (
     <div>
     <nav>
-      <div class="nav-left">
+      <div className="nav-left">
         {/* <img class="hamburger-menu" src="hamburger-menu2.png"/> */}
-        <ul class="breadcrumb">
+        <ul className="breadcrumb">
           <li><button>Home</button></li>
           <li><button>About</button></li>
           <li><button onClick={() => on()}>Help</button></li>
         </ul>
 
       </div>
-      <div class="nav-middle">
-        <img class="logo" src="Ferd-math-white.png"/>
+      <div className="nav-middle">
+        <img className="logo" src="Ferd-math-white.png"/>
       </div>
     </nav>
       <div className="overlay" id="overlay" onClick={() => off()}>
-        <div id="overlay-text">
-          <p>example equations</p>
-          <MathComponent tex={"2x+5"}/>
-          <MathComponent tex={"\\frac{(x^2+2x)}{(3x+4)}"}/>
+        <div className="overlay-div">
+          <p className="overlay-text">Welcome to Ferd-Math Derivative Calculator!</p>
+          <p className="overlay-text">example equations</p>
+          <img id="overlay-math-example-1" src="math_example_1.png"/>
+          <img id="overlay-math-example-2" src="math_example_2.png"/>
         </div>
       </div>
       <div className="content">

@@ -233,7 +233,7 @@ const Canv = (props) => {
         if(i != plotPoints.firstDeriv.length-1) {
           p5.stroke(0);
           p5.line(plotPoints.firstDeriv[i][0]+origin, origin-(plotPoints.firstDeriv[i][1]), plotPoints.firstDeriv[i+1][0]+origin, origin-(plotPoints.firstDeriv[i+1][1]) );
-          p5.stroke(0,0,139)
+          p5.stroke(0,255,0)
           p5.line(plotPoints.secondDeriv[i][0]+origin, origin-(plotPoints.secondDeriv[i][1]), plotPoints.secondDeriv[i+1][0]+origin, origin-(plotPoints.secondDeriv[i+1][1]) );
           p5.stroke(255,0,0);
           p5.line(plotPoints.thirdDeriv[i][0]+origin, origin-(plotPoints.thirdDeriv[i][1]), plotPoints.thirdDeriv[i+1][0]+origin, origin-(plotPoints.thirdDeriv[i+1][1]) );

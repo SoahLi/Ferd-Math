@@ -41,15 +41,44 @@ button {
   cursor: pointer;
 }
 
-#overlay-text{
+.overlay-div{
+  background-color: floralwhite;
+  border-radius: 10px;
   position: absolute;
-  top: 50%;
+  align-items: center;
+  width: 750px;
+  height: 350px;
+  top: 54%;
   left: 50%;
   font-size: 50px;
   color: white;
   transform: translate(-50%,-50%);
   -ms-transform: translate(-50%,-50%);
 }
+
+.overlay-text{
+  display: block;
+  text-align: center;
+  color:black;
+  font-size: 30px;
+}
+
+#overlay-math-example-1 {
+  width: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#overlay-math-example-2 {
+  width: 175px;
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%);
+}
+
 
 nav {
   background-color: #0f2c47;
