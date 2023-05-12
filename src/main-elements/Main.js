@@ -2,7 +2,6 @@ import MySketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/
 import Input from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Input.js';
 import Buttons from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Buttons.js';
 import Answer from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Answer.js';
-import { MathComponent } from "mathjax-react";
 import { useState } from 'react';
 
 
@@ -33,21 +32,21 @@ const Main = () => {
         </ul>
       </div>
       <div className="nav-middle">
-        <img className="logo" src="Ferd-math-white.png"/>
+        <img alt="logo" className="logo" src="Ferd-math-white.png"/>
       </div>
     </nav>
       <div className="overlay" id="overlay" onClick={() => overlayOff()}>
         <div className="overlay-div">
           <p className="overlay-text">Welcome to Ferd-Math Derivative Calculator!</p>
           <p className="overlay-text">example Expressions</p>
-          <img id="overlay-math-example-1" src="math_example_1.png"/>
-          <img id="overlay-math-example-2" src="math_example_2.png"/>
+          <img alt="math-example-1" id="overlay-math-example-1" src="math_example_1.png"/>
+          <img alt="math-example-2" id="overlay-math-example-2" src="math_example_2.png"/>
         </div>
       </div>
       <div className="content">
         <div className="popover" id="popover">
           <div className="popover-arrow"></div>
-            <img src="X-icon.png" className="x-icon" onClick={() => popoverOff()}/>
+            <img alt="close-icon" src="X-icon.png" className="x-icon" onClick={() => popoverOff()}/>
             <p className="symbol-conversions">√ == \sqrt</p>
             <p className="symbol-conversions">ln() == log()</p>
             <p className="symbol-conversions"><sup>n</sup>√ == \nthroot</p>

@@ -1,5 +1,3 @@
-import MySketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
-
 function Buttons() {
   return (
     <div>

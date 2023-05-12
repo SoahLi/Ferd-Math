@@ -1,7 +1,7 @@
 import { MathComponent } from 'mathjax-react';
 import {parse, derivative} from 'mathjs';
 const nerdamer = require("nerdamer/all.min");
-var Algebrite = require('algebrite')
+//var Algebrite = require('algebrite')
 var steps = [];
 
 
@@ -9,14 +9,14 @@ export function importExpression(equation) {
   steps = [];
   let deriv;
   try {
-    if(equation != "") {
+    if(equation !== "") {
       steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>);
       deriv = solve(parse(equation));
     }
   } catch {
     console.log("error");
   }
-  if(deriv != undefined) {
+  if(deriv !== undefined) {
     //deriv = Algebrite.simplify(deriv).toString();
     steps.push("the derivative is");
     steps.push(<MathComponent tex={nerdamer(deriv).toTeX()}/>);
@@ -50,7 +50,9 @@ function powerRule(leftNode, rightNode) {
     console.log("executing power rule");
     let right_equation = rightNode.toString();
     let left_equation = leftNode.toString();
+    // eslint-disable-next-line
     let equation = (right_equation+"*("+left_equation+"^("+(right_equation+"-1")+"))*("+derivative(left_equation, "x")+")");
+
     steps.push("apply the power rule and don't forget the baby");
     steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>);
     return equation; 
@@ -148,7 +150,7 @@ function solve(mathTree) {
   let right_node = tree.args[1];
   let operator = tree.op;
   let statements = [];
-  if(operator == "+" || operator == "-") {
+  if(operator === "+" || operator === "-") {
     for(let i=0; i<tree.args.length; i++) {
       if(tree.isFunctionNode) {
         statements.push(functionRule(tree));
@@ -160,7 +162,7 @@ function solve(mathTree) {
         statements.push(solve(tree.args[i]));
       }
     }
-    if(statements.length == 2) {
+    if(statements.length === 2) {
       result = statements[0] +operator+ statements[1];
     } else {
       result = operator + statements[0];
@@ -169,7 +171,7 @@ function solve(mathTree) {
     if(tree.args[0].isConstantNode && tree.args[1].isConstantNode) {
       return "0"
     }
-    if(((tree.args[0].isOperatorNode || tree.args[0].isParenthesisNode || tree.args[0].isFunctionNode) && (tree.args[1].isOperatorNode || tree.args[1].isParenthesisNode || tree.args[1].isFunctionNode)) || (operator == "^")) {
+    if(((tree.args[0].isOperatorNode || tree.args[0].isParenthesisNode || tree.args[0].isFunctionNode) && (tree.args[1].isOperatorNode || tree.args[1].isParenthesisNode || tree.args[1].isFunctionNode)) || (operator === "^")) {
       result = difunctionRules[operator](left_node, right_node);
     } else {
       for(let i=0; i<tree.args.length; i++) {
@@ -183,7 +185,7 @@ function solve(mathTree) {
           statements.push(solve(tree.args[i]));
         }
       }
-      if(statements.length == 2) {
+      if(statements.length === 2) {
         result = statements[0] +operator+ statements[1];
       } else if(operator !== undefined) {
         result = operator + statements[0];

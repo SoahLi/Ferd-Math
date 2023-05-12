@@ -49,7 +49,7 @@ function increaseSet(set) {
   }
   for(let i=0; i<set.mainSet.length; i++) {
     set.mainSet[i] *= factor;
-    if(i != 0) {
+    if(i !== 0) {
     }
   }
   setSingleSizes();
@@ -77,7 +77,7 @@ function decreaseSet(set) {
 function createsubSet(set) {
   set.subSet = [];
   let subCount;
-  if (set.mainSet[set.mainSet.length-1]%2 == 0) {
+  if (set.mainSet[set.mainSet.length-1]%2 === 0) {
     subCount = 4;
   } else {
     subCount = 5;
@@ -182,7 +182,7 @@ const Canv = (props) => {
 
 //Draws graph using p5js
 const draw = (p5) => {
-  if(isGraph == true) {
+  if(isGraph === true) {
     p5.clear();
     p5.background(255);
     p5.stroke(240);
@@ -201,7 +201,7 @@ const draw = (p5) => {
     p5.strokeWeight(w/350);
     for(let i=0; i<intervals; i++) {
       let distance = intervalDistance*i+excess;
-      if(i!=5) {
+      if(i!==5) {
         p5.stroke(15,44,71);
         p5.line(distance,excess,distance,h);
         p5.line(excess,distance,w,distance);
@@ -226,7 +226,7 @@ const draw = (p5) => {
     //draw plotpoints
     for(let i=0; i<plotPoints.firstDeriv.length; i++) {
       //p5.rect(plotPoints[i][0]+origin, origin-(plotPoints[i][1]),5,5);
-      if(i != plotPoints.firstDeriv.length-1) {
+      if(i !== plotPoints.firstDeriv.length-1) {
         p5.stroke(0);
         p5.line(plotPoints.firstDeriv[i][0]+origin, origin-(plotPoints.firstDeriv[i][1]), plotPoints.firstDeriv[i+1][0]+origin, origin-(plotPoints.firstDeriv[i+1][1]) );
         p5.stroke(0,255,0)
@@ -246,7 +246,7 @@ const draw = (p5) => {
     p5.fill(255);
     //p5.strokeWeight(w/350);
     for(let i=0; i<intervals; i++) {
-      if(i!=5) {
+      if(i!==5) {
         let distance = intervalDistance*i+excess;
         p5.text(xSet.mainSet[i],distance,origin+20);
         p5.text(ySet.mainSet[(intervals-(i+1))],origin-15,distance+4);

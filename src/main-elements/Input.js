@@ -8,7 +8,6 @@ addStyles()
 
 
 function Input({setSteps}) {
-  const [input, setInput] = useState([]);
   const [text, setText] = useState('');
   const [latex, setLatex] = useState('');
   console.log(      <EditableMathField 
