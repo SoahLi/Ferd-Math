@@ -10,20 +10,11 @@ addStyles()
 function Input({setSteps}) {
   const [text, setText] = useState('');
   const [latex, setLatex] = useState('');
-  console.log(      <EditableMathField 
-    id="my-input"
-    latex={latex}
-    text={latex}
-    onChange={(mathField) => {
-        setText(mathField.text());
-        setLatex(mathField.latex());
-      }
-    }
-  />);
   
   const handleButtonClick = () => {
     if(importInputToSketch(text)){
       let newSteps = importExpression(text);
+      console.log(newSteps);
       setSteps(newSteps);
     } else {
       alert("please type a valid expression");
