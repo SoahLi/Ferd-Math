@@ -96,7 +96,7 @@ function setSingleSizes() {
   singleXSize = graphLength/Math.abs((xSet.mainSet[0]-xSet.mainSet[xSet.mainSet.length-1]));
 }
 
-
+//iterates and calculates every interval for first, second, and third derivatives
 export function iterate(eq) {
   const equation = parse(eq); 
   const x = parse('x');
@@ -111,6 +111,7 @@ export function iterate(eq) {
   return [firstDerivSet, secondDerivSet, thirdDerivSet];
 }
 
+//solves for equation at one interval
 function calculate(input, v = 0) {
   const scope = {x: v};
   try {
@@ -137,6 +138,7 @@ const plot = (sets) => {
   }
 }
 
+
 function handleInput() {
   try {
       plotPoints.firstDeriv = [];
@@ -157,7 +159,7 @@ function handleInput() {
   isGraph = true;
 }
 
-
+//the canvas
 const Canv = (props) => {
   const setup = (p5, canvasParentRef) => {
     // use parent to render the canvas in this ref
@@ -178,85 +180,85 @@ const Canv = (props) => {
 
 
 
-
-  const draw = (p5) => {
-    if(isGraph == true) {
-      p5.clear();
-      p5.background(255);
-      p5.stroke(240);
-      p5.rectMode(p5.CENTER);
-      p5.textAlign(p5.CENTER);
-      p5.strokeWeight(w/1000);
-      p5.textSize(w/50);
-      //subSet lines;
-      let subLength = xSet.subSet.length > ySet.subSet.length ? xSet.subSet.length : ySet.subSet.length;
-      for(let i=0; i<subLength; i++) {
-        let xDistance = xSet.subSet[i]*singleXSize+origin;
-        let yDistance = ySet.subSet[i]*singleYSize+origin;
-        p5.line(xDistance,excess,xDistance,h);
-        p5.line(excess,yDistance,w,yDistance);
-      }
-      p5.strokeWeight(w/350);
-      for(let i=0; i<intervals; i++) {
-        let distance = intervalDistance*i+excess;
-        if(i!=5) {
-          p5.stroke(15,44,71);
-          p5.line(distance,excess,distance,h);
-          p5.line(excess,distance,w,distance);
-          p5.noStroke();
-        }
-      }
-      p5.stroke(15,44,71);
-      //x-origin
-      p5.line(origin,excess,origin,h);
-      //y-origin
-      p5.line(excess,origin,w,origin);
-      //left-border
-      p5.line(excess,excess,excess,h);
-      //bottom_border
-      p5.line(excess,h,w,h);
-      //right-border
-      p5.line(w,excess,h,w);
-      //top-border
-      p5.line(excess,excess,w,excess);  
-      p5.noStroke();
-      p5.text(0, origin-15, origin+20);
-      //draw plotpoints
-      for(let i=0; i<plotPoints.firstDeriv.length; i++) {
-        //p5.rect(plotPoints[i][0]+origin, origin-(plotPoints[i][1]),5,5);
-        if(i != plotPoints.firstDeriv.length-1) {
-          p5.stroke(0);
-          p5.line(plotPoints.firstDeriv[i][0]+origin, origin-(plotPoints.firstDeriv[i][1]), plotPoints.firstDeriv[i+1][0]+origin, origin-(plotPoints.firstDeriv[i+1][1]) );
-          p5.stroke(0,255,0)
-          p5.line(plotPoints.secondDeriv[i][0]+origin, origin-(plotPoints.secondDeriv[i][1]), plotPoints.secondDeriv[i+1][0]+origin, origin-(plotPoints.secondDeriv[i+1][1]) );
-          p5.stroke(255,0,0);
-          p5.line(plotPoints.thirdDeriv[i][0]+origin, origin-(plotPoints.thirdDeriv[i][1]), plotPoints.thirdDeriv[i+1][0]+origin, origin-(plotPoints.thirdDeriv[i+1][1]) );
-
-        }
-      }
-      p5.stroke(15,44,71);
-      p5.fill(15,44,71);
-      p5.rect(0,h, excess+7, h*2);
-      p5.rect(0,h+excess-2,w*2,excess-10);
-      p5.rect(excess,0,w*2,excess+7);
-      p5.rect(w*2+1.5,excess,w*2);
-      p5.stroke(0,0,0);
-      p5.fill(255);
-      //p5.strokeWeight(w/350);
-      for(let i=0; i<intervals; i++) {
-        if(i!=5) {
-          let distance = intervalDistance*i+excess;
-          p5.text(xSet.mainSet[i],distance,origin+20);
-          p5.text(ySet.mainSet[(intervals-(i+1))],origin-15,distance+4);
-        }
-      }
-      isGraph = true; 
+//Draws graph using p5js
+const draw = (p5) => {
+  if(isGraph == true) {
+    p5.clear();
+    p5.background(255);
+    p5.stroke(240);
+    p5.rectMode(p5.CENTER);
+    p5.textAlign(p5.CENTER);
+    p5.strokeWeight(w/1000);
+    p5.textSize(w/50);
+    //subSet lines;
+    let subLength = xSet.subSet.length > ySet.subSet.length ? xSet.subSet.length : ySet.subSet.length;
+    for(let i=0; i<subLength; i++) {
+      let xDistance = xSet.subSet[i]*singleXSize+origin;
+      let yDistance = ySet.subSet[i]*singleYSize+origin;
+      p5.line(xDistance,excess,xDistance,h);
+      p5.line(excess,yDistance,w,yDistance);
     }
-  };
+    p5.strokeWeight(w/350);
+    for(let i=0; i<intervals; i++) {
+      let distance = intervalDistance*i+excess;
+      if(i!=5) {
+        p5.stroke(15,44,71);
+        p5.line(distance,excess,distance,h);
+        p5.line(excess,distance,w,distance);
+        p5.noStroke();
+      }
+    }
+    p5.stroke(15,44,71);
+    //x-origin
+    p5.line(origin,excess,origin,h);
+    //y-origin
+    p5.line(excess,origin,w,origin);
+    //left-border
+    p5.line(excess,excess,excess,h);
+    //bottom_border
+    p5.line(excess,h,w,h);
+    //right-border
+    p5.line(w,excess,h,w);
+    //top-border
+    p5.line(excess,excess,w,excess);  
+    p5.noStroke();
+    p5.text(0, origin-15, origin+20);
+    //draw plotpoints
+    for(let i=0; i<plotPoints.firstDeriv.length; i++) {
+      //p5.rect(plotPoints[i][0]+origin, origin-(plotPoints[i][1]),5,5);
+      if(i != plotPoints.firstDeriv.length-1) {
+        p5.stroke(0);
+        p5.line(plotPoints.firstDeriv[i][0]+origin, origin-(plotPoints.firstDeriv[i][1]), plotPoints.firstDeriv[i+1][0]+origin, origin-(plotPoints.firstDeriv[i+1][1]) );
+        p5.stroke(0,255,0)
+        p5.line(plotPoints.secondDeriv[i][0]+origin, origin-(plotPoints.secondDeriv[i][1]), plotPoints.secondDeriv[i+1][0]+origin, origin-(plotPoints.secondDeriv[i+1][1]) );
+        p5.stroke(255,0,0);
+        p5.line(plotPoints.thirdDeriv[i][0]+origin, origin-(plotPoints.thirdDeriv[i][1]), plotPoints.thirdDeriv[i+1][0]+origin, origin-(plotPoints.thirdDeriv[i+1][1]) );
 
-  return (
-    <Sketch setup={setup} draw={draw} />
-  )
+      }
+    }
+    p5.stroke(15,44,71);
+    p5.fill(15,44,71);
+    p5.rect(0,h, excess+7, h*2);
+    p5.rect(0,h+excess-2,w*2,excess-10);
+    p5.rect(excess,0,w*2,excess+7);
+    p5.rect(w*2+1.5,excess,w*2);
+    p5.stroke(0,0,0);
+    p5.fill(255);
+    //p5.strokeWeight(w/350);
+    for(let i=0; i<intervals; i++) {
+      if(i!=5) {
+        let distance = intervalDistance*i+excess;
+        p5.text(xSet.mainSet[i],distance,origin+20);
+        p5.text(ySet.mainSet[(intervals-(i+1))],origin-15,distance+4);
+      }
+    }
+    isGraph = true; 
+  }
+};
+
+return (
+  <Sketch setup={setup} draw={draw} />
+)
 };
 
 export default Canv;

@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
-import { addStyles, EditableMathField, StaticMathField } from 'react-mathquill';
-import { parse } from 'mathjs';
+import { addStyles, EditableMathField} from 'react-mathquill';
 import { importInputToSketch } from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
-import mySketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
-import { importFunction } from "/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Solve.js";
-import { MathComponent } from "mathjax-react";
-const nerdamer = require("nerdamer/all.min");
+import { importExpression } from "/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Solve.js";
 // inserts the required css to the <head> block.
 // you can skip this, if you want to do that by yourself.
 addStyles()
 
 
-function Input({ steps, setSteps}) {
+function Input({setSteps}) {
   const [input, setInput] = useState([]);
   const [text, setText] = useState('');
   const [latex, setLatex] = useState('');
@@ -28,7 +24,7 @@ function Input({ steps, setSteps}) {
   
   const handleButtonClick = () => {
     if(importInputToSketch(text)){
-      let newSteps = importFunction(text);
+      let newSteps = importExpression(text);
       setSteps(newSteps);
     } else {
       alert("please type a valid expression");
@@ -55,41 +51,3 @@ function Input({ steps, setSteps}) {
 }
 
 export default Input;
-// const parseSteps = (newSteps) => {
-//   let parsedSteps = [];
-//   for (let i=0; i<newSteps.length; i++) {
-//     try {
-//       var LaTeX = nerdamer(newSteps[i]).toTeX();
-//       console.log(LaTeX);
-//       parsedSteps.push(<MathComponent tex={LaTeX}/>);
-//     } catch {
-//       parsedSteps.push(<p>{steps[i]}</p>);
-//     }
-//   }
-//   console.log(parsedSteps);
-//   return parsedSteps;
-// }
-
-  // const combine = (mySteps, myExplanations) => {
-  //   const arr1 = mySteps;
-  //   const arr2 = myExplanations;
-    
-  //   const maxLength = Math.max(arr1.length, arr2.length);
-    
-  //   const result = [];
-    
-  //   for (let i = 0; i < maxLength; i++) {
-  //     if (i < arr1.length) {
-  //       result.push(arr1[i]);
-  //     }
-  //     if (i < arr2.length) {
-  //       result.push(arr2[i]);
-  //     }
-  //   }
-  //   console.log(result);
-  //   return result;
-  // }
-
-  // const handleInputChange = (event) => {
-  //   setInput(event.target.value);
-  // };
