@@ -12,9 +12,7 @@ import Main from "/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Main
 
 function App() {
   return (
-    <div>
-      <Main></Main>
-    </div>
+    <Main></Main>
   );
 }
 

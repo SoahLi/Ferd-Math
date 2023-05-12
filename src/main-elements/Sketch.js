@@ -1,33 +1,12 @@
-/*
-Division not working
-*/
-
 import React from "react";
 import Sketch from 'react-p5';
-import {parseTex, evaluateTex} from 'tex-math-parser';
-//import * as math from 'mathjs';
-import {parse, derivative, evaluate, compile} from 'mathjs';
-// let test = parseTex('x^3');
-// test = derivative(derivative(test, 'x'), 'x');
-// console.log(test);
-// console.log(test.evaluate({x: 2}));
+import {parse, derivative} from 'mathjs';
 
+//boolean for valid inputs
+let inputDoesWork = true;
 let functionInput = "";
-/* FOR MATHQUILL INPUT 
-
-export function setFunctionInput(input) {
-  functionInput = String.raw`${input}`;
-  //functionInput = input;
-  handleInput();
-}
-*/
-
-// FOR REG INPUT
-export function setFunctionInput(equation) {
-  functionInput = equation
-  //functionInput = input;
-  handleInput();
-}
+//boolean for drawing the graph
+let isGraph = true;
 const excess = 5;
 const h = 510;
 const w = 510;
@@ -36,15 +15,29 @@ let ySet = {mainSet: [-5,-4,-3,-2,-1,0,1,2,3,4,5], subSet: [], derivSet: [], sec
 let intervals = 11;
 const origin = (w+excess)/2;
 const graphLength = ((origin*2)-(excess*2));
+/*
+size between each interval inclusive to the axes intervals,
+(one axis might be (5,10,15...) and another might be (25, 50, 75))
+*/
 let singleYSize = graphLength/Math.abs((ySet.mainSet[0]-ySet.mainSet[ySet.mainSet.length-1]));
 let singleXSize = graphLength/Math.abs((xSet.mainSet[0]-xSet.mainSet[xSet.mainSet.length-1]));
+//physical distance, measured in pixels
 let intervalDistance = graphLength/(intervals-1);
-let isGraph = true;
-let texts = [];
 let xPoints = {firstDeriv: [], secondDeriv: [], thirdDeriv: []};
 let yPoints = {firstDeriv: [], secondDeriv: [], thirdDeriv: []};
+//plot points are finalized versions of x and y cordinates, scaled to match the size of the graph
 var plotPoints = {firstDeriv: [], secondDeriv: [], thirdDeriv: []};
 
+
+export function importInputToSketch(equation) {
+  inputDoesWork = true;
+  functionInput = equation
+  handleInput();
+  return inputDoesWork;
+}
+
+
+// increase X or Y intervals
 function increaseSet(set) {
   let factor;
   if(set.factorCount < 2) {
@@ -63,6 +56,7 @@ function increaseSet(set) {
   handleInput();
 }
 
+// increase X or Y intervals
 function decreaseSet(set) {
   let factor;
   if(set.factorCount > 0) {
@@ -79,6 +73,7 @@ function decreaseSet(set) {
   handleInput();
 }
 
+//creates an extra 3-4 plot points for each interval(intervals are the lines with numbers)
 function createsubSet(set) {
   set.subSet = [];
   let subCount;
@@ -95,14 +90,13 @@ function createsubSet(set) {
   }
 }
 
-
+//scalers
 function setSingleSizes() {
   singleYSize = graphLength/Math.abs((ySet.mainSet[0]-ySet.mainSet[ySet.mainSet.length-1]));
   singleXSize = graphLength/Math.abs((xSet.mainSet[0]-xSet.mainSet[xSet.mainSet.length-1]));
 }
-/*
-LN NOT WORKING
-*/
+
+
 export function iterate(eq) {
   const equation = parse(eq); 
   const x = parse('x');
@@ -110,8 +104,6 @@ export function iterate(eq) {
   let secondDerivSet = [];
   let thirdDerivSet = [];
   for(let i=0; i<xSet.subSet.length; i++) {
-    //console.log(derivative(equation, x),xSet.subSet[i]);
-    //console.log(calculate(equation, xSet.subSet[i]));
     firstDerivSet.push(Math.round(calculate(equation, xSet.subSet[i])*100000)/100000);
     secondDerivSet.push(Math.round((calculate(derivative(equation, x),xSet.subSet[i]))*100000)/100000);
     thirdDerivSet.push(Math.round((calculate(derivative(derivative(equation, x), x),xSet.subSet[i]))*100000)/100000);
@@ -126,6 +118,7 @@ function calculate(input, v = 0) {
     return result;
   }
   catch {
+    inputDoesWork = false;
     return undefined;
   }
 }
@@ -157,7 +150,7 @@ function handleInput() {
       yPoints.thirdDeriv = [];
       plot(iterate(functionInput));
   } catch {
-    console.log("this aint it bro");  
+    inputDoesWork = false;
   }
   createsubSet(xSet);
   createsubSet(ySet);
@@ -189,7 +182,8 @@ const Canv = (props) => {
   const draw = (p5) => {
     if(isGraph == true) {
       p5.clear();
-      p5.stroke(246);
+      p5.background(255);
+      p5.stroke(240);
       p5.rectMode(p5.CENTER);
       p5.textAlign(p5.CENTER);
       p5.strokeWeight(w/1000);

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { addStyles, EditableMathField, StaticMathField } from 'react-mathquill';
 import { parse } from 'mathjs';
-import {setFunctionInput} from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
+import { importInputToSketch } from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
 import mySketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
 import { importFunction } from "/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Solve.js";
 import { MathComponent } from "mathjax-react";
@@ -11,30 +11,39 @@ const nerdamer = require("nerdamer/all.min");
 addStyles()
 
 
-function Input({ steps, setSteps }) {
+function Input({ steps, setSteps}) {
   const [input, setInput] = useState([]);
   const [text, setText] = useState('');
   const [latex, setLatex] = useState('');
+  console.log(      <EditableMathField 
+    id="my-input"
+    latex={latex}
+    text={latex}
+    onChange={(mathField) => {
+        setText(mathField.text());
+        setLatex(mathField.latex());
+      }
+    }
+  />);
   
   const handleButtonClick = () => {
-    setFunctionInput(text);
-    let newSteps = importFunction(text);
-    // let newExplanations = newSteps[1];
-    // newSteps = newSteps[0];
-    // const parsedSteps = parseSteps(newSteps);
-    // setSteps(parsedSteps);
-    // let completeMethod = combine(parsedSteps, newExplanations);
-    setSteps(newSteps);
+    if(importInputToSketch(text)){
+      let newSteps = importFunction(text);
+      setSteps(newSteps);
+    } else {
+      alert("please type a valid expression");
+    }
   };
 
   return (
-    <div className='input-with-enter-button'>
+    <div className='input-with-enter-button'>    
       <EditableMathField 
         id="my-input"
         latex={latex}
         text={latex}
         onChange={(mathField) => {
             setText(mathField.text());
+            setLatex(mathField.latex());
           }
         }
       />

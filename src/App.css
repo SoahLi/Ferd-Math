@@ -27,6 +27,49 @@ button {
   color: #61dafb;
 }
 
+.popover {
+  z-index: 1;
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 150px;
+  height: 170px;
+  background-color: #0f2c47;
+  border-style: solid;
+  border-color: white;
+  border-width: 1px;
+  border-radius: 10px;
+  top: 79px;
+  left: 25px;
+  padding-bottom: 10px;
+}
+
+
+.popover-arrow {
+  position: absolute;
+  top: -18px;
+  left: 38%;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 20px solid #0f2c47;
+  width: 0;
+  height: 0;
+}
+
+.x-icon {
+cursor: pointer;
+width: 10px;
+margin-left: auto;
+margin-top: 5px;
+margin-right: 5px;
+}
+
+.symbol-conversions {
+  margin: 10px;
+  color: white;
+}
+
 #overlay {
   position: fixed;
   display: block;
@@ -93,12 +136,12 @@ nav {
   float:left;
   display: flex;
   align-items: center;
-  margin-left: 10px;
+  margin-left: px;
 }
 
 /* Style the list */
 ul.breadcrumb {
-  padding: 10px 16px;
+  padding: 10px 15px;
   list-style: none;
 }
 
@@ -184,6 +227,11 @@ ul.breadcrumb li button:hover {
   width: 735px;
 }
 
+.math-inputs-and-text-box {
+  display: flex;
+  align-items: center;
+}
+
 .input-with-enter-button {
   border-radius: 10px 10px 10px 10px;
   margin-top: 10px;
@@ -252,6 +300,7 @@ ul.breadcrumb li button:hover {
   color: white;
   text-align: center;
   width: 720px;
+  padding-bottom: 16px;
 }
 
 .answer-div {
@@ -259,7 +308,6 @@ ul.breadcrumb li button:hover {
   display:inline-block;
   background-color: #0f2c47;
   border-radius: 10px;
-
 }
 
 .mq-math-mode {

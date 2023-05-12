@@ -1,16 +1,3 @@
-/* TODO
-*better ui especially for Answer div
-*touch up sketch.js
-*Components in Wrong order (should be input, plus minus buttons, Answer div)   
-*expected raw latex when using nerdamer but tex output is simplified
-*figure out whether to simplify equation in beginning of solving
-*/
-/*
-TODO 2
-
-*refactor sketch.js
-*/
-
 import { MathComponent } from 'mathjax-react';
 import {OperatorNode, ConstantNode, SymbolNode, ParenthesisNode, FunctionNode, parse, derivative, evaluate, compile} from 'mathjs';
 const nerdamer = require("nerdamer/all.min");
@@ -19,29 +6,21 @@ var Algebrite = require('algebrite')
 
 var steps = [];
 export function importFunction(equation) {
-  console.log(equation);
   steps = [];
   let deriv;
   try { 
-    //let equation = document.getElementById('input-field').value
     if(equation != "") {
-      //steps.push("Original Equation");
       steps.push(<MathComponent tex={nerdamer(equation).toTeX({simplify: false})}/>);
-      // if (simplify(equation).toString() !== parse(equation).toString()){
-      //   steps.push("Simplify the equation");
-      //   console.log(equation);
-      //   equation = Algebrite.simplify(equation).toString();
-      //   console.log(equation);
-      //   steps.push(<MathComponent tex={nerdamer(equation).toTeX({simplify: false})}/>);
-      // }
       deriv = solve(parse(equation));
     }
   } catch {
-    console.log("error");
+    console.log("er");
   }
   if(deriv != undefined) {
-    deriv = Algebrite.simplify(deriv).toString();
+    //deriv = Algebrite.simplify(deriv).toString();
+    steps.push("the derivative is");
     steps.push(<MathComponent tex={nerdamer(deriv).toTeX({simplify: false})}/>);
+    steps.push("Donde Esta!")
   }
   console.log(steps);
   console.log("done");
@@ -67,14 +46,31 @@ function functionRule(node) {
 }
 
 function powerRule(leftNode, rightNode) {
-  console.log("executing power rule");
+  if((rightNode instanceof SymbolNode) || (rightNode instanceof OperatorNode) || (rightNode instanceof ParenthesisNode)) {
+    return exponentRule(leftNode, rightNode);
+  } else {
+    console.log("executing power rule");
+    let right_equation = rightNode.toString();
+    let left_equation = leftNode.toString();
+    let equation = (right_equation+"*("+left_equation+"^("+(right_equation+"-1")+"))*("+derivative(left_equation, "x")+")");
+    steps.push("apply the power rule and don't forget the baby");
+    steps.push(<MathComponent tex={nerdamer(equation).toTeX({simplify: false})}/>);
+    return equation; 
+  }
+}
+
+function exponentRule(leftNode, rightNode) {
+  console.log("executing exponent rule")
   let right_equation = rightNode.toString();
   let left_equation = leftNode.toString();
-  let equation = (right_equation+"*("+left_equation+"^("+(right_equation+"-1")+"))*("+derivative(left_equation, "x")+")");
-  steps.push("apply the power rule and don't forget the baby");
-  steps.push(<MathComponent tex={nerdamer(equation).toTeX({simplify: false})}/>);
-  return equation; 
+  let equation = (left_equation+"^("+right_equation+")*log("+left_equation+")*(("+solve(rightNode)+"))");
+  console.log("this the equation");
+  console.log(equation);
+  steps.push("The original times the ln of the base times the derviative of the exponent");
+  steps.push(<MathComponent tex={nerdamer(equation).toTeX({simplify: false})}/>)
+  return equation;
 }
+
 
 
 function productRule(left_node, right_node) {
@@ -90,6 +86,7 @@ function productRule(left_node, right_node) {
   steps.push(<MathComponent tex={nerdamer(right_derivative).toTeX({simplify: false})}/>);
   let equation = "("+left_equation+")*("+left_derivative+")+("+right_equation+")*("+left_derivative+")";
   steps.push("the first guy times the derivative of the second guy plus the second guy times the derivative of the first guy");
+  steps.push(<MathComponent tex={nerdamer(equation).toTeX({simplify: false})}/>);
   return equation;
 }
 
@@ -114,7 +111,26 @@ function quotientRule(left_node, right_node) {
 
 const difunctionRules = {"^": powerRule, "/": quotientRule, "*": productRule};
 
-
+function removeParenthesis(mathTree) {
+  console.log("removing parenthesis");
+  while (true) {
+    if (mathTree.isParenthesisNode) {
+      mathTree = mathTree.content;
+    } else {
+      break
+    }
+  }
+  if(!(mathTree instanceof OperatorNode) || !(mathTree instanceof ParenthesisNode)) return mathTree;
+  let left_side = mathTree.args[0];
+  let right_side = mathTree.args[1];
+  if(left_side instanceof ParenthesisNode) {
+    left_side = removeParenthesis(left_side);
+  }
+  if(right_side instanceof ParenthesisNode) {
+    right_side = removeParenthesis(right_side);
+  } 
+  return parse(left_side + mathTree.operator + right_side);
+}
 
 function solve(mathTree) {
   let tree = mathTree;
@@ -122,13 +138,14 @@ function solve(mathTree) {
   console.log("equation")
   console.log(mathTree.toString());
   console.log(tree.hasOwnProperty('args'));
-  while (true) {
-    if (tree.isParenthesisNode) {
-      tree = tree.content;
-    } else {
-      break
-    }
-  }
+  // while (true) {
+  //   if (tree.isParenthesisNode) {
+  //     tree = tree.content;
+  //   } else {
+  //     break
+  //   }
+  // }
+  tree = removeParenthesis(tree);
   if(tree.isSymbolNode) {
     return "1";
   }
