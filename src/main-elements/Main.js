@@ -41,6 +41,10 @@ const Main = () => {
           <p className="overlay-text">example Expressions</p>
           <img alt="math-example-1" id="overlay-math-example-1" src="math_example_1.png"/>
           <img alt="math-example-2" id="overlay-math-example-2" src="math_example_2.png"/>
+          <footer>
+            <p className="footer-info">View <a className="git-link" href="https://github.com/SoahLi/Ferd-Math" target="_blank">Code</a></p>
+            <p className="footer-info" id="author">Created by Owen Turnbull</p>
+          </footer>
         </div>
       </div>
       <div className="content">
