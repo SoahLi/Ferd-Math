@@ -1,7 +1,7 @@
-import MySketch from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Sketch.js';
-import Input from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Input.js';
-import Buttons from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Buttons.js';
-import Answer from '/Users/owenturnbull/ferd-math/ferd-math/src/main-elements/Answer.js';
+import MySketch from './Sketch.js';
+import Input from './Input.js';
+import Buttons from './Buttons.js';
+import Answer from './Answer.js';
 import { useState } from 'react';
 
 
