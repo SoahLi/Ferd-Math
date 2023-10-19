@@ -1,7 +1,7 @@
 # Ferd-Math Derivative Calculator
 
 A graphing and step-by-step Calculator  
-Built using React, P5JS, MathJs, MathJax, and Nerdamer
+Built using React, P5JS, MathJs, MathJax, and MathQuill
 
 ### `Solve.js`
 
