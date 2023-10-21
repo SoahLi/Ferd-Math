@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { addStyles, EditableMathField} from 'react-mathquill';
 import { importInputToSketch } from './Sketch.js';
 import { importExpression } from "./Solve.js";
+import {latexParser} from "latex-parser"
 // inserts the required css to the <head> block.
 // you can skip this, if you want to do that by yourself.
 addStyles()
@@ -13,7 +14,8 @@ function Input({setSteps}) {
   
   const handleButtonClick = () => {
     if(importInputToSketch(text)){
-      let newSteps = importExpression(text);
+      console.log(latexParser.parse(latex))
+      let newSteps = importExpression(latexParser.parse(latex).toString());
       console.log(newSteps);
       setSteps(newSteps);
     } else {

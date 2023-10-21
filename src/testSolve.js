@@ -1,27 +1,6 @@
-import { MathComponent } from 'mathjax-react';
 import {parse, derivative, simplify} from 'mathjs';
-const nerdamer = require("nerdamer/all.min");
-var Algebrite = require('algebrite')
+var Algebrite = require("algebrite")
 var steps = [];
-
-export function importExpression(equation) {
-  steps = [];
-  let deriv;
-  try {
-    if(equation !== "") {
-      steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>);
-      deriv = solve(parse(equation));
-    }
-  } catch {
-    console.log("error");
-  }
-  if(deriv !== undefined) {
-    steps.push("the derivative is");
-    steps.push(<MathComponent tex={nerdamer(deriv).toTeX()}/>);
-    steps.push("Donde Esta!")
-  }
-  return steps;
-}
 
 function functionRule(node) {
   let equation = node.args[0];
@@ -30,7 +9,6 @@ function functionRule(node) {
   steps.push("the derivative of the function")
   let func = node.name+"(t)";
   func = derivative(func, "t").toString();
-  steps.push(<MathComponent tex={nerdamer(func).toTeX()}/>);
   steps.push("the derivative of the inside");
   if(equation.isFunctionNode) {
     difEquation  = functionRule(equation);
@@ -45,14 +23,13 @@ function powerRule(leftNode, rightNode) {
   if((rightNode.isSymbolNode) || (rightNode.isOperatorNode) || (rightNode.isParenthesisNode)) {
     return exponentRule(leftNode, rightNode);
   } else {
-    console.log("executing power rule");
+    //console.log("executing power rule");
     let right_equation = rightNode.toString();
     let left_equation = leftNode.toString();
     // eslint-disable-next-line
-    let equation = (right_equation+"*("+left_equation+"^("+(right_equation+"-1")+"))*("+derivative(left_equation, "x")+")");
+    let equation = (right_equation+"*("+left_equation+"^("+(right_equation+"-1")+"))*("+solve(leftNode)+")");
 
     steps.push("apply the power rule and don't forget the baby");
-    steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>)
     return equation; 
   }
 }
@@ -62,9 +39,8 @@ function exponentRule(leftNode, rightNode) {
   let right_equation = rightNode.toString();
   let left_equation = leftNode.toString();
   let equation = (left_equation+"^("+right_equation+")*log("+left_equation+")*(("+solve(rightNode)+"))");
-  console.log("this the equation");
-  console.log(equation);
-  steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>)
+  //console.log("this the equation");
+  //console.log(equation);
   return equation;
 }
 
@@ -76,11 +52,9 @@ function productRule(left_node, right_node) {
   let right_equation = right_node.toString();
   steps.push("the left sides derivative:");
   let left_derivative = solve(left_node);
-  steps.push(<MathComponent tex={nerdamer(left_derivative).toTeX()}/>);
   steps.push("the rigth sides derivative:");
   let right_derivative = solve(right_node);
-  steps.push(<MathComponent tex={nerdamer(right_derivative).toTeX()}/>);
-  let equation = "("+left_equation+")*("+left_derivative+")+("+right_equation+")*("+left_derivative+")";
+  let equation = "("+left_equation+")*("+right_derivative+")+("+right_equation+")*("+left_derivative+")";
   return equation;
 }
 
@@ -91,12 +65,10 @@ function quotientRule(left_node, right_node) {
   let left_equation = left_node.toString();
   let right_equation = right_node.toString();
   let right_derivative = solve(right_node);
-  steps.push(<MathComponent tex={nerdamer(right_derivative).toTeX()}/>);
   steps.push("the numerator's derivative:");
   let left_derivative = solve(left_node);
-  steps.push(<MathComponent tex={nerdamer(left_derivative).toTeX()}/>);
   let equation =  ("(("+right_equation+"*("+left_derivative+"))-("+left_equation+"*("+right_derivative+")))/("+right_equation+")^2");
-  console.log(equation);
+  //console.log(equation);
   return equation;
 }
 
@@ -106,7 +78,7 @@ const difunctionRules = {"^": powerRule, "/": quotientRule, "*": productRule};
 
 
 function removeParenthesis(mathTree) {
-  console.log("removing parenthesis");
+  //console.log("removing parenthesis");
   while (true) {
     if (mathTree.isParenthesisNode) {
       mathTree = mathTree.content;
@@ -123,8 +95,8 @@ function removeParenthesis(mathTree) {
   if(right_side.isParenthesisNode) {
     right_side = removeParenthesis(right_side);
   } 
-  console.log()
-  console.log(left_side + mathTree.operator + right_side);
+  //console.log()
+  //console.log(left_side + mathTree.operator + right_side);
   return parse(left_side + mathTree.operator + right_side);
 }
 function parseTheTree(mathString) {
@@ -155,7 +127,7 @@ function parseTheTree(mathString) {
               operators.push(char)
           }
       }
-      console.log(args)
+      //console.log(args)
   }
   if (unadded_idx != mathString.length-1) {
       args.push(mathString.substring(unadded_idx, mathString.length))
@@ -170,14 +142,23 @@ function isAFunction(mathString) {
   return false
 }
 
+function replace(string) {
+  return string.replace(/xp/g, ' ^ ');
+}
+
+
+
 //main function
-function solve(mathTree) {
+export function solve(mathTree) {
   let tree = mathTree;
-  console.log(parseTheTree(tree.toString()))
-  tree = simplify(tree)
-  let [components, symbols] = parseTheTree(tree.toString())
+  //console.log(parseTheTree(tree.toString()))
+  if(typeof(tree) == "string") {
+    tree = parse(tree);
+  }
+  //let [components, symbols] = parseTheTree(tree.toString())
   let result;
   if(tree.isSymbolNode) {
+    if(tree.toString() == "e") return "0";
     return "1";
   }
   if(tree.isConstantNode) {
@@ -188,29 +169,25 @@ function solve(mathTree) {
     return result;
   }
   /*
+  *this is not true
   *splits tree by middle operator
   *example 2x+5 splits to 2x and 5
   */
   // if (tree.operator == "*" || tree.operator == "^") {
     
   // }
-  
+  //'3*x^4 - 2*x^3 + 5*x^2 - x + 7'
+  while(tree.isParenthesisNode){
+    tree = tree.content
+  }
   let left_node = tree.args[0];
   let right_node = tree.args[1];
   let operator = tree.op;
   let statements = [];
+  //split terms first
   if(operator === "+" || operator === "-") {
     for(let i=0; i<tree.args.length; i++) {
-      console.log(tree.args[i].toString())
-      if(tree.isFunctionNode) {
-        statements.push(functionRule(tree));
-      } else if(tree.args[i].isConstantNode) {
-        statements.push("0");
-      } else if(tree.args[i].isSymbolNode) {
-        statements.push("1");
-      }  else {
         statements.push(solve(tree.args[i]));
-      }
     }
     if(statements.length === 2) {
       result = statements[0] +operator+ statements[1];
@@ -218,12 +195,14 @@ function solve(mathTree) {
       result = operator + statements[0];
     }
   } else {
-    if(tree.args[0].isConstantNode && tree.args[1].isConstantNode) {
-      return "0"
-    }
-    if(((tree.args[0].isOperatorNode || tree.args[0].isParenthesisNode || tree.args[0].isFunctionNode) && (tree.args[1].isOperatorNode || tree.args[1].isParenthesisNode || tree.args[1].isFunctionNode)) || (operator === "^")) {
+    // if(tree.args[0].isConstantNode && tree.args[1].isConstantNode) {
+    //   return "0";
+    // }
+    if(((tree.args[0].isOperatorNode || tree.args[0].isParenthesisNode || tree.args[0].isFunctionNode) || (tree.args[1].isOperatorNode || tree.args[1].isParenthesisNode || tree.args[1].isFunctionNode)) || (operator == "^") ) {
       result = difunctionRules[operator](left_node, right_node);
-    } else {
+    } 
+
+    else {
       for(let i=0; i<tree.args.length; i++) {
         if(tree.isFunctionNode) {
           statements.push(functionRule(tree));
@@ -244,7 +223,10 @@ function solve(mathTree) {
       }
     }
   }
-  result = simplify(result)
-  result = (result).toString();
+  // result = simplify(result).toString()
+  // result = Algebrite.simplify(result).toString();
+  // result = Algebrite.simplify(result).toString();
+  // result = replace(result)
+  //result = Algebrite.simplify(Algebrite.simplify(simplify(result).toString()).toString()).toString();
   return result;
 }
