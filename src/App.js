@@ -1,10 +1,16 @@
 
 import './App.css';
 import Main from "./Main.js";
+import { Analytics } from '@vercel/analytics/react';
+
+
 
 function App() {
   return (
-    <Main></Main>
+    <div>
+      <Main></Main>
+      <Analytics />
+    </div>
   );
 }
 
