@@ -89,7 +89,7 @@ margin-right: 5px;
 }
 
 .overlay-div{
-  background-color: floralwhite;
+  background-color: white;
   border-radius: 10px;
   position: absolute;
   align-items: center;
@@ -120,11 +120,11 @@ margin-right: 5px;
 }
 
 #overlay-math-example-2 {
-  width: 161px;
+  width: 350px;
   position: absolute;
-  top: 47%;
+  top: 55%;
   left: 50%;
-  transform: translate(-50%);
+  transform: translate(-50%, -50%);
 }
 
 footer {
