@@ -23,6 +23,10 @@ describe('Derivative Solver', () => {
     const result = solve('x^2 + 4*x - 6');
     expect(result).toBe('2*(x+2)');
   });
+  it('calculates the derivative of a trigonometric function correctly', () => {
+    const result = solve('sin(x)');
+    expect(result).toBe('cos(x)');
+  });
 
   it('calculates the derivative of a trigonometric function correctly', () => {
     const result = solve('sin(2*x)');
@@ -33,6 +37,11 @@ describe('Derivative Solver', () => {
     const result = solve('e^(3*x)');
     expect(result).toBe('3*exp(3*x)');
   });
+  
+  it('calculates a symbol raised to a function', () => {
+    const result = solve('e^sin(x)')
+    expect(result).toBe("e^sin(x) * cos(x) * lne")
+  })
 
   it('calculates the derivative of an exponential function with a constant coefficient', () => {
     const result = solve("3^x");
@@ -54,11 +63,19 @@ describe('Derivative Solver', () => {
     const result = solve('(x^2 + 2*x) / (x + 1)');
     expect(result).toBe('(x ^ 2 + 2 * x + 2) / (x + 1) ^ 2');
   });
+  it('calculates quotient rule with two trig functions', () => {
+    const result = solve("(sin(x))/(cos(x))");
+    expect(result).toBe("(cos(x)^2+sin(x)^2)/(cos(x)^2)")
+  })
   //having trouble with fractions
   it('calculates the derivative using the power rule with fractional exponent correctly', () => {
     const result = solve('x^(1/2)');
     expect(result).toBe('0.5 * x^(-0.5)');
   });
+  it('calculates the derivative using the product', () => {
+    const result = solve("(2x+5)*(3x^2+1)")
+    expect(result).toBe('18x^2+30x+2')
+  })
 
   it('calculates the derivate of a double composit function', () => {
     const result = solve("sin((5*x+3)^2)");

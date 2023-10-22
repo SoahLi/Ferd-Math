@@ -22,26 +22,30 @@ export function importExpression(equation, latex) {
   }
   return steps;
 }
-//sec not working
 function functionRule(node) {
   let equation = node.args[0];
-  let difEquation;
+  let difExpression;
   steps.push("The derivative of the function times the derivative of the inside");
-  let func = node.name+"(t)";
+  let func = node.name+"(y)";
   steps.push("the derivative of the function")
-  func = derivative(func, "t").toString();
+  func = derivative(func, "y").toString();
   steps.push(<MathComponent tex={nerdamer(func).toTeX()}/>);
   steps.push("the derivative of the inside");
   if(equation.isFunctionNode) {
-    difEquation  = functionRule(equation);
+    difExpression  = functionRule(equation);
   } else {
-    difEquation = solve(equation);
+    difExpression = solve(equation);
   }
-  steps.push(<MathComponent tex={nerdamer(difEquation).toTeX()}/>);
-  let finalEquation = "("+difEquation+")*"+func.replace("t", equation);
+  steps.push(<MathComponent tex={nerdamer(difExpression).toTeX()}/>);
+  let finalEquation
+  //the SymbolNode object does not have .toString(), but does have .toString
+  if(equation.isSymbolNode) finalEquation = "("+difExpression+")*"+func.replace(/y/g, equation.toString);
+  else finalEquation = "("+difExpression+")*"+func.replace(/y/g, equation.toString());
+  finalEquation = simplify(finalEquation).toString()
   steps.push(<MathComponent tex={nerdamer(finalEquation).toTeX()}/>);
-  return (finalEquation);
+  return finalEquation;
 }
+
 
 function powerRule(leftNode, rightNode) {
   if((rightNode.isSymbolNode) || (rightNode.isOperatorNode) || (rightNode.isParenthesisNode)) {
@@ -68,15 +72,15 @@ function exponentRule(leftNode, rightNode) {
 
 
 
-function productRule(left_node, right_node) {
-  let left_equation = left_node.toString();
-  let right_equation = right_node.toString();
+function productRule(leftNode, rightNode) {
+  let left_equation = leftNode.toString();
+  let right_equation = rightNode.toString();
   steps.push("the first guy times the derivative of the second guy plus the second guy times the derivative of the first guy");
   steps.push("the left sides derivative:");
-  let left_derivative = solve(left_node);
+  let left_derivative = solve(leftNode);
   steps.push(<MathComponent tex={nerdamer(left_derivative).toTeX()}/>);
   steps.push("the right sides derivative:");
-  let right_derivative = solve(right_node);
+  let right_derivative = solve(rightNode);
   steps.push(<MathComponent tex={nerdamer(right_derivative).toTeX()}/>);
   let equation = "("+left_equation+")*("+right_derivative+")+("+right_equation+")*("+left_derivative+")";
   steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>);
@@ -84,17 +88,16 @@ function productRule(left_node, right_node) {
 }
 
 
-function quotientRule(left_node, right_node) {
-  let left_equation = left_node.toString();
-  let right_equation = right_node.toString();
+function quotientRule(leftNode, rightNode) {
+  let left_equation = leftNode.toString();
+  let right_equation = rightNode.toString();
   steps.push("the denominator times the derivative of the numerator minus the numerator times the derivative of the denominator all over the denominator squared");
   steps.push("the denominator's derivative:");
-  console.log("d derive")
-  console.log()
-  let right_derivative = solve(right_node);
+  console.log(rightNode.toString())
+  let right_derivative = solve(rightNode);
   steps.push(<MathComponent tex={nerdamer(right_derivative).toTeX()}/>);
   steps.push("the numerator's derivative:");
-  let left_derivative = solve(left_node);
+  let left_derivative = solve(leftNode);
   steps.push(<MathComponent tex={nerdamer(left_derivative).toTeX()}/>);
   let equation =  ("(("+right_equation+"*("+left_derivative+"))-("+left_equation+"*("+right_derivative+")))/("+right_equation+")^2");
   steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>);
@@ -125,85 +128,41 @@ function removeParenthesis(mathTree) {
   } 
   return parse(left_side + mathTree.operator + right_side);
 }
-function parseTheTree(mathString) {
-  let InParenthises = false
-  let openParens = 0
-  let char;
-  let unadded_idx = 0
-  let args = []
-  let operators = []
-  for( let i = 0; i < mathString.length; i++) {
-      char = mathString[i]
-      if ( char == "(") {
-          openParens++
-      }
-      else if (char == ")") {
-          if (!openParens) {
-              args.push(mathString.substring(unadded_idx+1, i+1))
-              unadded_idx = i+1
-          }   else {
-              openParens--;
-          }
-      }
-
-      else if (char == "+" || char == "-") {
-          if (!openParens) {
-              args.push(mathString.substring(unadded_idx, i))
-              unadded_idx = i+1
-              operators.push(char)
-          }
-      }
-  }
-  if (unadded_idx != mathString.length-1) {
-      args.push(mathString.substring(unadded_idx, mathString.length))
-  }
-  return args, operators
-}
-
-function isAFunction(mathString) {
-  if ("*" in mathString || "^" in mathString || "/" in mathString) {
-    return true
-  }
-  return false
-}
 
 
 
 //main function
 export function solve(mathTree) {
   let tree = mathTree;
-  if(typeof(tree) == "string") {
-    tree = parse(tree);
-  }
-  console.log(tree)
-  //let [components, symbols] = parseTheTree(tree.toString())
+  //convert to a mathTree
+  if(typeof(tree) == "string") tree = parse(tree);
   let result;
+  //remove parenthesis
+  while(tree.isParenthesisNode) tree = tree.content
   if(tree.isSymbolNode) {
     if(tree.toString() == "e") return "0";
-    if(tree.toString() == "π") return "0";
-    return "1";
+    else if(tree.toString() == "π") return "0";
+    else if(tree.toString = "x") return "1";
   }
   if(tree.isConstantNode) {
     return "0";
   }
+  //e.g sin,cos
   if(tree.isFunctionNode) {
     result = functionRule(tree).toString();
     return result;
   }
-  /*
-  *this is not true
-  *splits tree by middle operator
-  *example 2x+5 splits to 2x and 5
-  */
-  // if (tree.operator == "*" || tree.operator == "^") {
-    
-  // }
-  //'3*x^4 - 2*x^3 + 5*x^2 - x + 7'
-  while(tree.isParenthesisNode){
-    tree = tree.content
-  }
-  let left_node = tree.args[0];
-  let right_node = tree.args[1];
+  /**
+   * splits tree by term
+   * @example '3*x^4 - 2*x^3 + 5*x^2 - x + 7'
+   * @return ['3*x^4 - 2*x^3 + 5*x^2 - x, '7']
+   * @example '(2x+5)*(3x^2)'
+   * @return ['(2x+5)', (3x^2)]
+   */
+
+  //check this
+  let leftNode = tree.args[0];
+  let rightNode = tree.args[1];
   while(tree.args[0].isParenthesisNode){
     tree.args[0] = tree.args[0].content
   }
@@ -211,61 +170,63 @@ export function solve(mathTree) {
     tree.args[1] = tree.args[1].content
   }
   let operator = tree.op;
-  let statements = [];
+  let terms = [];
   //split terms first
   if(operator === "+" || operator === "-") {
     for(let i=0; i<tree.args.length; i++) {
-        statements.push(solve(tree.args[i]));
+        terms.push(solve(tree.args[i]));
     }
-    if(statements.length === 2) {
-      result = statements[0] +operator+ statements[1];
+    // account for "two term" expressions like -3x^2
+    if(terms.length === 2) {
+      result = terms[0] +operator+ terms[1];
     } else {
-      result = operator + statements[0];
+      result = operator + terms[0];
     }
-  } else {
-    //if the expression looks something like 5x^4
+  } 
+  else {
+    //prevent expressions like 5x^4 from executing product rule(5 * x^4)
     if(tree.args[0].isConstantNode && tree.args[1].op == "^"){
       var derivative_now = solve(tree.args[1])
       result = tree.args[0] +"*"+ derivative_now;
       result = simplify(result).toString()
       return result;
     }
+    //e.g (1)/(2)
     if(tree.args[0].isConstantNode && tree.args[1].isConstantNode){
       return "0";
     }
+    //product, quotient, power rule
     if((tree.args[0].isOperatorNode || tree.args[0].isParenthesisNode || tree.args[0].isFunctionNode) || (tree.args[1].isOperatorNode || tree.args[1].isParenthesisNode || tree.args[1].isFunctionNode) || tree.op == "^") {
-        console.log(tree)
-        result = difFunctionRules[operator](left_node, right_node);
+        result = difFunctionRules[operator](leftNode, rightNode);
     } 
     else {
+      //the expression looks something like 3x
       for(let i=0; i<tree.args.length; i++) {
         if(tree.isFunctionNode) {
-          statements.push(functionRule(tree));
+          terms.push(functionRule(tree));
         } else if(tree.args[i].isConstantNode) {
-          statements.push(tree.args[i]);
+          terms.push(tree.args[i]);
         } else if(tree.args[i].isSymbolNode && ((tree.args[i]).toString() == "π")) {
-          statements.push("π");
+          terms.push("π");
         } else if(tree.args[i].isSymbolNode && ((tree.args[i]).toString() == "e")) {
-          statements.push("e");
+          terms.push("e");
         } else if(tree.args[i].isSymbolNode && (tree.args[i].toString() == "x")) {
-          statements.push("1");
+          terms.push("1");
         } else {
-          statements.push(solve(tree.args[i]));
+          terms.push(solve(tree.args[i]));
         }
       }
-      if(statements.length === 2) {
-        result = statements[0] +operator+ statements[1];
+      if(terms.length === 2) {
+        result = terms[0] +operator+ terms[1];
       } else if(operator !== undefined) {
-        result = operator + statements[0];
+        result = operator + terms[0];
       } else {
-        result = statements[0];
+        result = terms[0];
       }
     }
   }
+  //simplifying with Algebrite and mathjs can produce better results
   result = simplify(result).toString()
   // result = Algebrite.simplify(result).toString();
-  // result = Algebrite.simplify(result).toString();
-  //result = Algebrite.simplify(Algebrite.simplify(simplify(result).toString()).toString()).toString();
   return result;
 }
-

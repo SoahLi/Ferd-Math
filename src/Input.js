@@ -2,33 +2,23 @@ import React, { useState } from 'react';
 import { addStyles, EditableMathField} from 'react-mathquill';
 import { importInputToSketch } from './Sketch.js';
 import { importExpression } from "./Solve.js";
-import {latexParser} from "latex-parser"
-import { replace } from 'lodash';
 // inserts the required css to the <head> block.
 // you can skip this, if you want to do that by yourself.
 addStyles()
 
 function convertLatex(input) {
-  // Replace fractions
-  input = input.replace(/\\frac{([^{}]+)}{([^{}]+)}/g, '{$1}/{$2}');
-  
-  // Replace names
-  input = input.replace(/\\cdot/g, '*');
-  input = input.replace(/{/g, '(');
-  input = input.replace(/}/g, ')');
-  input = input.replace(/xp/g, ' ^ ');
-  input = input.replace(/\\left/g, '');
-  input = input.replace(/\\right/g, '');
-  input = input.replace(/\\sin/g, "sin");
-  input = input.replace(/\\cos/g, "cos");
-  input = input.replace(/\\tan/, "tan");
-  input = input.replace(/\\sec/g, "sec");
-  input = input.replace(/\\pi/g, "π")
-  input = input.replace(/\\ /g, "");
-
-  
-  return input;
+  return input
+    .replace(/\\frac{([^{}]+)}{([^{}]+)}/g, '{$1}/{$2}')
+    .replace(/\\cdot/g, '*')
+    .replace(/{/g, '(')
+    .replace(/}/g, ')')
+    .replace(/xp/g, ' ^ ')
+    .replace(/\\left|\\right/g, '')
+    .replace(/\\(sin|cos|tan|sec|cot|csc)/g, "$1")
+    .replace(/\\pi/g, "π")
+    .replace(/\\ /g, "");
 }
+
 
 //problems with spaces. e.g 2^2+3 works but 2^2 + 3 does not work
 function Input({setSteps}) {
