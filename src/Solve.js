@@ -4,12 +4,12 @@ const nerdamer = require("nerdamer/all.min");
 var Algebrite = require('algebrite')
 var steps = [];
 
-export function importExpression(equation) {
+export function importExpression(equation, latex) {
   steps = [];
   let deriv;
   try {
     if(equation !== "") {
-      steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>);
+      steps.push(<MathComponent tex={latex}/>);
       deriv = solve(parse(equation));
     }
   } catch {

@@ -37,7 +37,7 @@ function Input({setSteps}) {
   
   const handleButtonClick = () => {
     if(importInputToSketch(text)){
-      let newSteps = importExpression(convertLatex(latex));
+      let newSteps = importExpression(convertLatex(latex), latex);
       setSteps(newSteps);
     } else {
       alert("please type a valid expression");
