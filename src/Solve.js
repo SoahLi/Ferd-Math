@@ -1,16 +1,16 @@
 import { MathComponent } from 'mathjax-react';
-import {parse, derivative, simplify} from 'mathjs';
+import {parse, derivative, simplify, expression} from 'mathjs';
 const nerdamer = require("nerdamer/all.min");
 var Algebrite = require('algebrite')
 var steps = [];
 
-export function importExpression(equation, latex) {
+export function importExpression(expression, latex) {
   steps = [];
   let deriv;
   try {
-    if(equation !== "") {
+    if(expression !== "") {
       steps.push(<MathComponent tex={latex}/>);
-      deriv = solve(parse(equation));
+      deriv = solve(parse(expression));
     }
   } catch {
     console.log("error");
@@ -23,7 +23,8 @@ export function importExpression(equation, latex) {
   return steps;
 }
 function functionRule(node) {
-  let equation = node.args[0];
+  let expression = node.args[0];
+  let expression_string = expression.toString()
   let difExpression;
   steps.push("The derivative of the function times the derivative of the inside");
   let func = node.name+"(y)";
@@ -31,19 +32,21 @@ function functionRule(node) {
   func = derivative(func, "y").toString();
   steps.push(<MathComponent tex={nerdamer(func).toTeX()}/>);
   steps.push("the derivative of the inside");
-  if(equation.isFunctionNode) {
-    difExpression  = functionRule(equation);
+  if(expression.isFunctionNode) {
+    difExpression  = functionRule(expression);
   } else {
-    difExpression = solve(equation);
+    difExpression = solve(expression);
   }
   steps.push(<MathComponent tex={nerdamer(difExpression).toTeX()}/>);
-  let finalEquation
+  let finalExpression
   //the SymbolNode object does not have .toString(), but does have .toString
-  if(equation.isSymbolNode) finalEquation = "("+difExpression+")*"+func.replace(/y/g, equation.toString);
-  else finalEquation = "("+difExpression+")*"+func.replace(/y/g, equation.toString());
-  finalEquation = simplify(finalEquation).toString()
-  steps.push(<MathComponent tex={nerdamer(finalEquation).toTeX()}/>);
-  return finalEquation;
+  if(expression.isSymbolNode) finalExpression = "("+difExpression+")*"+func.replace(/y/g, expression.toString);
+  else {
+    finalExpression = "("+difExpression+")*"+func.replace(/y/g, expression_string);
+  }
+  finalExpression = simplify(finalExpression).toString()
+  steps.push(<MathComponent tex={nerdamer(finalExpression).toTeX()}/>);
+  return finalExpression;
 }
 
 
@@ -51,30 +54,30 @@ function powerRule(leftNode, rightNode) {
   if((rightNode.isSymbolNode) || (rightNode.isOperatorNode) || (rightNode.isParenthesisNode)) {
     return exponentRule(leftNode, rightNode);
   } else {
-    let right_equation = rightNode.toString();
-    let left_equation = leftNode.toString();
+    let right_expression = rightNode.toString();
+    let left_expression = leftNode.toString();
     // eslint-disable-next-line
-    let equation = (right_equation+"*("+left_equation+"^("+(right_equation+"-1")+"))*("+solve(leftNode)+")");
+    let expression = (right_expression+"*("+left_expression+"^("+(right_expression+"-1")+"))*("+solve(leftNode)+")");
     steps.push("apply the power rule and don't forget the baby");
-    steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>);
-    return equation; 
+    steps.push(<MathComponent tex={nerdamer(expression).toTeX()}/>);
+    return expression; 
   }
 }
 
 function exponentRule(leftNode, rightNode) {
   steps.push("The original times the ln of the base times the derviative of the exponent");
-  let right_equation = rightNode.toString();
-  let left_equation = leftNode.toString();
-  let equation = (left_equation+"^("+right_equation+")*(ln"+left_equation+")*(("+solve(rightNode)+"))");
-  steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>);
-  return equation;
+  let right_expression = rightNode.toString();
+  let left_expression = leftNode.toString();
+  let expression = (left_expression+"^("+right_expression+")*(ln"+left_expression+")*(("+solve(rightNode)+"))");
+  steps.push(<MathComponent tex={nerdamer(expression).toTeX()}/>);
+  return expression;
 }
 
 
 
 function productRule(leftNode, rightNode) {
-  let left_equation = leftNode.toString();
-  let right_equation = rightNode.toString();
+  let left_expression = leftNode.toString();
+  let right_expression = rightNode.toString();
   steps.push("the first guy times the derivative of the second guy plus the second guy times the derivative of the first guy");
   steps.push("the left sides derivative:");
   let left_derivative = solve(leftNode);
@@ -82,26 +85,25 @@ function productRule(leftNode, rightNode) {
   steps.push("the right sides derivative:");
   let right_derivative = solve(rightNode);
   steps.push(<MathComponent tex={nerdamer(right_derivative).toTeX()}/>);
-  let equation = "("+left_equation+")*("+right_derivative+")+("+right_equation+")*("+left_derivative+")";
-  steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>);
-  return equation;
+  let expression = "("+left_expression+")*("+right_derivative+")+("+right_expression+")*("+left_derivative+")";
+  steps.push(<MathComponent tex={nerdamer(expression).toTeX()}/>);
+  return expression;
 }
 
 
 function quotientRule(leftNode, rightNode) {
-  let left_equation = leftNode.toString();
-  let right_equation = rightNode.toString();
+  let left_expression = leftNode.toString();
+  let right_expression = rightNode.toString();
   steps.push("the denominator times the derivative of the numerator minus the numerator times the derivative of the denominator all over the denominator squared");
   steps.push("the denominator's derivative:");
-  console.log(rightNode.toString())
   let right_derivative = solve(rightNode);
   steps.push(<MathComponent tex={nerdamer(right_derivative).toTeX()}/>);
   steps.push("the numerator's derivative:");
   let left_derivative = solve(leftNode);
   steps.push(<MathComponent tex={nerdamer(left_derivative).toTeX()}/>);
-  let equation =  ("(("+right_equation+"*("+left_derivative+"))-("+left_equation+"*("+right_derivative+")))/("+right_equation+")^2");
-  steps.push(<MathComponent tex={nerdamer(equation).toTeX()}/>);
-  return equation;
+  let expression =  ("(("+right_expression+"*("+left_derivative+"))-("+left_expression+"*("+right_derivative+")))/("+right_expression+")^2");
+  steps.push(<MathComponent tex={nerdamer(expression).toTeX()}/>);
+  return expression;
 }
 
 const difFunctionRules = {"^": powerRule, "/": quotientRule, "*": productRule};
