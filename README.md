@@ -12,5 +12,5 @@ Creates a canvas using p5 js, and plots points according to input. The x axis an
 ## Limitations 
 
 1. In certain senarios symbols like π and fractions like (1/2) can cause unintended behavior
-2. functions like x^(1/2) and log(x) have not been implementated
+2. functions like x^(1/2) and log(x) have not been implemented
 3. Page layout is not flexible
