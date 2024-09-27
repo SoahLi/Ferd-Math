@@ -1,7 +1,7 @@
 # Ferd-Math Derivative Calculator 
 A graphing and step-by-step Calculator Built using React, P5JS, MathJs, MathJax, and Nerdamer <br>
 Built for [Ferd Schneider](https://www.linkedin.com/in/ferd-schneider-b1406019/) <br>
-[Try it here](https://ferd-math.vercel.app/)
+[Link To Website](https://ferd-math.vercel.app/)
 
 ### `Solve.js` 
 Parses user input by symbol and logically identifies solves problems step by step 
